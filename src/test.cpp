@@ -1,6 +1,7 @@
 ﻿#include <platform/window.hpp>
 #include <core/time.hpp>
 #include <core/io.hpp>
+#include <graphics/renderer.hpp>
 
 double delta{};
 
@@ -18,8 +19,25 @@ int main() {
 
 	ee::Window window(window_create_info);
 
+	ee::Window::CurrentState* window_state = window.GetCurrentStatePtr();
+
+	ee::Window::InternalInfo window_internal_info = window.GetInternalInfo();
+
+	ee::Renderer renderer{};
+	renderer.InitializeRenderer(window_internal_info);
 
 	while (!window.ShouldClose()) {
 		window.PollEvents();
+		
+		if (window_state->resize) {
+			renderer.SetViewport(window_state->size);
+			window_state->resize = false;
+		}
+
+		renderer.ClearScreen({ 1.0f, 1.0f, 1.0f, 1.0f });
+
+		delta = ee::Time::GetDelta();
+
+		renderer.SwapBuffers();
 	}
 }

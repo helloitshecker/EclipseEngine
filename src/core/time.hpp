@@ -2,8 +2,11 @@
 
 namespace ee {
 	namespace Time {
-		double GetCurrent();
-		double GetCurrentHighRes();
+		double GetCurrentTimeInSeconds();
+		double GetCurrentTimeInMillseconds();
+		double GetCurrentTimeInMicroseconds();
+		double GetCurrentTimeInNanoseconds();
 		double GetDelta();
+		void Sleep(double time);
 	};
 };

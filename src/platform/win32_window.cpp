@@ -7,6 +7,7 @@
 #include <Windows.h>
 #include <dwmapi.h>
 #pragma comment(lib, "dwmapi.lib")
+#include <core/memory.hpp>
 
 constexpr wchar_t CLASS_NAME[] = L"EclipseEngine";
 const HINSTANCE hInstance = GetModuleHandle(nullptr);
@@ -16,6 +17,7 @@ bool shouldclose{};
 WINDOWPLACEMENT oldPlacement;
 DWORD oldStyle;
 bool isFullscreen = false;
+ee::Window::CurrentState* state = (ee::Window::CurrentState*)ee::Memory::Allocate(sizeof(ee::Window::CurrentState));
 
 static LRESULT CALLBACK WindowProc(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam) {
 	switch (umsg) {
@@ -24,11 +26,17 @@ static LRESULT CALLBACK WindowProc(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM l
 	case WM_QUIT:
 		shouldclose = true;
 		PostQuitMessage(0);
-		break;
+		return 0;
+	case WM_SIZE:
+		state->resize = true;
+		state->size.w = LOWORD(lparam);
+		state->size.h = HIWORD(lparam);
+		return 0;
+	default:
+		return DefWindowProc(hwnd, umsg, wparam, lparam);
 	};
-
+	
 	// handle fallback messages
-	return DefWindowProc(hwnd, umsg, wparam, lparam);
 }
 
 ee::Window::Window(ee::Window::CreateInfo& create_info) {
@@ -75,6 +83,9 @@ ee::Window::Window(ee::Window::CreateInfo& create_info) {
 	}
 
 	ShowWindow(hWnd, static_cast<int>(create_info.state));
+
+	state->resize = false;
+	state->size = create_info.size;
 }
 
 void ee::Window::PollEvents() {
@@ -119,6 +130,22 @@ void ee::Window::SetTitleBarDarkMode(bool mode) {
 	const DWORD attribute = DWMWA_USE_IMMERSIVE_DARK_MODE;
 	BOOL useDarkMode = mode ? TRUE : FALSE;
 	DwmSetWindowAttribute(hWnd, attribute, &useDarkMode, sizeof(useDarkMode));
+}
+
+ee::Window::InternalInfo ee::Window::GetInternalInfo() {
+	InternalInfo ifo{};
+	ifo.hwnd = hWnd;
+	ifo.size = state->size;
+
+	return ifo;
+}
+
+ee::Window::~Window() {
+	ee::Memory::Free(state);
+}
+
+ee::Window::CurrentState* ee::Window::GetCurrentStatePtr() {
+	return state;
 }
 
 #endif
