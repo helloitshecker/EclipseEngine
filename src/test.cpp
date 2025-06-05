@@ -1,4 +1,4 @@
-#include <platform/window.hpp>
+﻿#include <platform/window.hpp>
 #include <core/time.hpp>
 #include <core/io.hpp>
 
@@ -17,6 +17,7 @@ int main() {
 	window_create_info.state = ee::Window::WindowState::SHOW;
 
 	ee::Window window(window_create_info);
+
 
 	while (!window.ShouldClose()) {
 		window.PollEvents();
