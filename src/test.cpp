@@ -2,6 +2,9 @@
 #include <core/time.hpp>
 #include <core/io.hpp>
 #include <graphics/renderer.hpp>
+#include <core/memory.hpp>
+
+constexpr ee::FVec4 COLOR_WHITE = { 1.0f, 1.0f, 1.0f, 1.0f };
 
 double delta{};
 
@@ -12,8 +15,8 @@ int main() {
 	window_create_info.position = { USERDEFAULT, USERDEFAULT };
 	window_create_info.fullscreen = false;
 	window_create_info.resizable = true;
-	window_create_info.vsync = true;		// X
-	window_create_info.adaptiveres = false;	// X
+	window_create_info.vsync = true;		
+	window_create_info.adaptiveres = false;	// Doesnt Work
 	window_create_info.darktheme = true;
 	window_create_info.state = ee::Window::WindowState::SHOW;
 
@@ -21,23 +24,26 @@ int main() {
 
 	ee::Window::CurrentState* window_state = window.GetCurrentStatePtr();
 
-	ee::Window::InternalInfo window_internal_info = window.GetInternalInfo();
-
 	ee::Renderer renderer{};
-	renderer.InitializeRenderer(window_internal_info);
+	renderer.InitializeRenderer(window);
+	renderer.SetVsync(window_create_info.vsync);
 
 	while (!window.ShouldClose()) {
 		window.PollEvents();
 		
+		//ee::Out::Print("\rFPS: {}       ", (int)(1 / delta));
+
 		if (window_state->resize) {
 			renderer.SetViewport(window_state->size);
 			window_state->resize = false;
 		}
 
-		renderer.ClearScreen({ 1.0f, 1.0f, 1.0f, 1.0f });
+		renderer.ClearScreen(COLOR_WHITE);
 
 		delta = ee::Time::GetDelta();
 
 		renderer.SwapBuffers();
 	}
+
+	ee::Memory::FreeAll();
 }

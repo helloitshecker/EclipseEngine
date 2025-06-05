@@ -7,5 +7,6 @@ namespace ee {
 	namespace Memory {
 		void* Allocate(size_t size);
 		void Free(void* memory);
+		void FreeAll();
 	};
 };

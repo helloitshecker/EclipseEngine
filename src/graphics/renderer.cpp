@@ -13,7 +13,7 @@ HGLRC context{};
 
 typedef HGLRC(WINAPI* PFNWGLCREATECONTEXTATTRIBSARBPROC)(HDC, HGLRC, const int*);
 
-void ee::Renderer::InitializeRenderer(ee::Window::InternalInfo& ifo) {
+void ee::Renderer::InitializeRenderer(ee::Window& wc) {
     
     PIXELFORMATDESCRIPTOR pfd = { sizeof(PIXELFORMATDESCRIPTOR), 1 };
     pfd.dwFlags = PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER;
@@ -23,7 +23,7 @@ void ee::Renderer::InitializeRenderer(ee::Window::InternalInfo& ifo) {
     pfd.cStencilBits = 8;
     pfd.iLayerType = PFD_MAIN_PLANE;
 
-    hdc = GetDC(static_cast<HWND>(ifo.hwnd));
+    hdc = GetDC(static_cast<HWND>(wc.GetWindowHandle()));
     int pixelFormat = ChoosePixelFormat(hdc, &pfd);
     SetPixelFormat(hdc, pixelFormat, &pfd);
 
@@ -55,6 +55,7 @@ void ee::Renderer::InitializeRenderer(ee::Window::InternalInfo& ifo) {
         throw std::runtime_error("Failed to initialize OpenGL!");
 
     context = realContext;
+
 }
 
 void ee::Renderer::ClearScreen(ee::FVec4 color) {
@@ -68,4 +69,17 @@ void ee::Renderer::SwapBuffers() {
 
 void ee::Renderer::SetViewport(ee::IVec2 size) {
     glViewport(0, 0, size.w, size.h);
+}
+
+void ee::Renderer::SetVsync(bool enabled) {
+    typedef BOOL(WINAPI* PFNWGLSWAPINTERVALEXTPROC)(int interval);
+    PFNWGLSWAPINTERVALEXTPROC wglSwapIntervalEXT = nullptr;
+
+    wglSwapIntervalEXT = (PFNWGLSWAPINTERVALEXTPROC)wglGetProcAddress("wglSwapIntervalEXT");
+    if (wglSwapIntervalEXT) {
+        wglSwapIntervalEXT(1);
+    }
+    else {
+        wglSwapIntervalEXT(0);
+    }
 }

@@ -28,9 +28,10 @@
 namespace ee {
 	class Renderer {
 	public:
-		void InitializeRenderer(ee::Window::InternalInfo& ifo);
+		void InitializeRenderer(ee::Window& wc);
 		void ClearScreen(ee::FVec4 color);
 		void SwapBuffers();
 		void SetViewport(ee::IVec2 size);
+		void SetVsync(bool enabled);
 	};
 };

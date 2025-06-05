@@ -43,13 +43,7 @@ namespace ee {
 
 		struct CurrentState {
 			ee::IVec2 size;
-
 			bool resize;
-		};
-
-		struct InternalInfo {
-			void* hwnd;
-			ee::IVec2 size;
 		};
 
 		Window(CreateInfo& create_info);
@@ -57,8 +51,8 @@ namespace ee {
 		bool ShouldClose();
 		void SetFullscreenState(bool fullscreen, bool adpativeres, ee::IVec2 res);
 		void SetTitleBarDarkMode(bool mode);
-		InternalInfo GetInternalInfo();
 		CurrentState* GetCurrentStatePtr();
+		void* GetWindowHandle();
 		~Window();
 	};
 };

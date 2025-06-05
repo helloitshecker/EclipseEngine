@@ -132,12 +132,8 @@ void ee::Window::SetTitleBarDarkMode(bool mode) {
 	DwmSetWindowAttribute(hWnd, attribute, &useDarkMode, sizeof(useDarkMode));
 }
 
-ee::Window::InternalInfo ee::Window::GetInternalInfo() {
-	InternalInfo ifo{};
-	ifo.hwnd = hWnd;
-	ifo.size = state->size;
-
-	return ifo;
+void* ee::Window::GetWindowHandle() {
+	return static_cast<void*>(hWnd);
 }
 
 ee::Window::~Window() {
