@@ -1,10 +1,4 @@
-[submodule "src/thirdParty/glfw"]
-	path = src/thirdParty/glfw
-	url = https://github.com/glfw/glfw
 [submodule "src/thirdParty/imgui"]
 	path = src/thirdParty/imgui
 	url = https://github.com/ocornut/imgui
 	branch = docking
-[submodule "src/thirdParty/fmt"]
-	path = src/thirdParty/fmt
-	url = https://github.com/fmtlib/fmt
