@@ -14,3 +14,4 @@ build
 .vs
 .vscode
 .history
+.cache
