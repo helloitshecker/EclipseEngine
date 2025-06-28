@@ -5,7 +5,7 @@
 
 namespace Eclipse {
     namespace MemoryPool {
-        struct MemoryPoolCreateInfo {
+        struct CreateInfo {
           size_t size;
         };
         struct MemoryPool {
@@ -15,7 +15,7 @@ namespace Eclipse {
           char* end;
         };
 
-        inline MemoryPool* CreateMemoryPool(MemoryPoolCreateInfo& create_info) {
+        inline MemoryPool* Create(CreateInfo& create_info) {
             MemoryPool* pool = (MemoryPool*)malloc(sizeof(MemoryPool));
             ECL_ASSERT(pool != nullptr, "Failed to allocate memory!");
 
@@ -28,7 +28,7 @@ namespace Eclipse {
             return pool;
         }
 
-        inline void DestroyMemoryPool(MemoryPool* pool) {
+        inline void Destroy(MemoryPool* pool) {
             free(pool->start);
             free(pool);
         }

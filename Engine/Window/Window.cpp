@@ -3,11 +3,11 @@
 #include "SDL3/SDL_events.h"
 #include "SDL3/SDL_video.h"
 
-#include <cstdlib>
+//#include <cstdlib>
 #include <SDL3/SDL.h>
 
-Eclipse::Window::WindowState* Eclipse::Window::CreateWindow(WindowCreateInfo& create_info) {
-    WindowState* ws = Eclipse::MemoryPool::Allocate<WindowState>(create_info.mempool, 1);
+Eclipse::Window::Window* Eclipse::Window::Create(CreateInfo& create_info) {
+    Window* ws = Eclipse::MemoryPool::Allocate<Window>(create_info.mempool, 1);
     ECL_ASSERT(ws != nullptr, "Window Could not be allocated!");
 
     SDL_Window* window;
@@ -21,27 +21,51 @@ Eclipse::Window::WindowState* Eclipse::Window::CreateWindow(WindowCreateInfo& cr
     ECL_ASSERT(window != nullptr, "Failed to create window!");
 
     ws->ptr = reinterpret_cast<void*>(window);
+    ws->eventpool = create_info.eventpool;
 
     return ws;
 }
 
-void Eclipse::Window::DestroyWindow(WindowState* state) {
+void Eclipse::Window::Destroy(Window* state) {
     SDL_DestroyWindow((SDL_Window*)state->ptr);
     SDL_Quit();
 }
 
-bool Eclipse::Window::ShouldClose(WindowState* state) {
+void Eclipse::Window::Poll(Window* state) {
+
     SDL_Event event;
 
     while (SDL_PollEvent(&event)) {
-        if (event.type == SDL_EVENT_QUIT) {
-            return true;
+
+        Eclipse::Event::Event current{};
+
+        bool valid = true;
+
+        switch (event.type) {
+            case SDL_EVENT_QUIT:
+                current.type = Eclipse::Event::Type::Exit;
+                break;
+            case SDL_EVENT_WINDOW_RESIZED:
+                current.type = Eclipse::Event::Type::WindowResized;
+                current.data = Eclipse::Event::WindowResizeEvent {
+                    {
+                        static_cast<int>(event.window.data1),
+                        static_cast<int>(event.window.data2)
+                    }
+                };
+                break;
+            default:
+                valid = false;
+                break;
+        }
+
+        if (valid) {
+            state->eventpool->events.push_back(current);
+            state->eventpool->enumerator++;
         }
     }
-
-    return false;
 }
 
-void Eclipse::Window::Update(WindowState* state) {
+void Eclipse::Window::Update(Window* state) {
 
 }

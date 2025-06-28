@@ -1,26 +1,60 @@
 #include <Engine/Window/Window.hpp>
 #include <Engine/Common/Memory.hpp>
+#include <print>
+
+bool shouldClose = false;
+Eclipse::IntVec2 window_size = {0, 0};
+
+void ProccessEvents(Eclipse::EventPool::EventPool* pool) {
+    for (size_t i = 0; i < pool->enumerator; i++) {
+        Eclipse::Event::Event& event = pool->events[i];
+        switch (event.type) {
+            case Eclipse::Event::Type::Exit:
+                shouldClose = true;
+                break;
+            case Eclipse::Event::Type::WindowResized:
+                Eclipse::IntVec2& size = std::get<Eclipse::Event::WindowResizeEvent>(event.data).size;
+                window_size = size;
+                break;
+        }
+    }
+
+    pool->events.clear();
+    pool->enumerator = 0;
+}
 
 int main(int argc, char* argv[]) {
-    Eclipse::MemoryPool::MemoryPoolCreateInfo mempool_create_info{};
+    Eclipse::MemoryPool::CreateInfo mempool_create_info{};
     mempool_create_info.size = 4096;
 
-    Eclipse::MemoryPool::MemoryPool* main_memory_pool = Eclipse::MemoryPool::CreateMemoryPool(mempool_create_info);
+    Eclipse::MemoryPool::MemoryPool* main_memory_pool = Eclipse::MemoryPool::Create(mempool_create_info);
 
-    Eclipse::Window::WindowCreateInfo window_create_info{};
+    Eclipse::EventPool::CreateInfo eventpool_create_info{};
+    eventpool_create_info.max_events = 32;
+    eventpool_create_info.pool = main_memory_pool;
+    eventpool_create_info.dispatch_file = "none.txt";
+
+    Eclipse::EventPool::EventPool* event_pool = Eclipse::EventPool::Create(eventpool_create_info);
+
+    Eclipse::Window::CreateInfo window_create_info{};
     window_create_info.title = "Hello, World!";
     window_create_info.size = {600, 400};
     window_create_info.resizable = true;
     window_create_info.fullscreen = false;
     window_create_info.adaptiveresolution = false;
     window_create_info.mempool = main_memory_pool;
+    window_create_info.eventpool = event_pool;
 
-    Eclipse::Window::WindowState* main_window = Eclipse::Window::CreateWindow(window_create_info);
+    Eclipse::Window::Window* main_window = Eclipse::Window::Create(window_create_info);
 
-    while (!Eclipse::Window::ShouldClose(main_window)) {
+    while (!shouldClose) {
+        Eclipse::Window::Poll(main_window);
+
+        ProccessEvents(event_pool);
+
         Eclipse::Window::Update(main_window);
     }
 
-    Eclipse::Window::DestroyWindow(main_window);
-    Eclipse::MemoryPool::DestroyMemoryPool(main_memory_pool);
+    Eclipse::Window::Destroy(main_window);
+    Eclipse::MemoryPool::Destroy(main_memory_pool);
 }
