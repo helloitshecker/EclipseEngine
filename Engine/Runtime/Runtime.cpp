@@ -1,10 +1,12 @@
 #include <Engine/Window/Window.hpp>
 #include <Engine/Common/Memory.hpp>
 #include <Engine/Graphics/Server.hpp>
+#include <Engine/Common/Time.hpp>
 #include <print>
 
 bool shouldClose = false;
 Eclipse::IntVec2 window_size = {0, 0};
+Eclipse::Time::TimeData timedata{};
 
 void ProccessEvents(Eclipse::EventPool::EventPool* pool) {
     for (size_t i = 0; i < pool->enumerator; i++) {
@@ -16,7 +18,6 @@ void ProccessEvents(Eclipse::EventPool::EventPool* pool) {
             case Eclipse::Event::Type::WindowResized:
                 Eclipse::IntVec2& size = std::get<Eclipse::Event::WindowResizeEvent>(event.data).size;
                 window_size = size;
-                std::println("Window Size changed by {} {}", size.x, size.y);
                 break;
         }
     }
@@ -64,6 +65,8 @@ int main(int argc, char* argv[]) {
         graphics_server->clear(clearcolor);
 
         Eclipse::Window::Update(main_window);
+        Eclipse::Time::Update();
+        timedata = Eclipse::Time::Get();
     }
 
     Eclipse::Window::Destroy(main_window);
