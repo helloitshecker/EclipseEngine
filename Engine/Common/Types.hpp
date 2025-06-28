@@ -6,4 +6,10 @@ namespace Eclipse {
       struct {int w, h;};
       int val[2];
   };
+
+  union FloatVec4 {
+      struct {float x, y, z, zp;};
+      struct {float r, g, b, a;};
+      float val[4];
+  };
 };

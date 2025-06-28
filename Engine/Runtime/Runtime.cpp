@@ -1,5 +1,6 @@
 #include <Engine/Window/Window.hpp>
 #include <Engine/Common/Memory.hpp>
+#include <Engine/Graphics/Server.hpp>
 #include <print>
 
 bool shouldClose = false;
@@ -15,6 +16,7 @@ void ProccessEvents(Eclipse::EventPool::EventPool* pool) {
             case Eclipse::Event::Type::WindowResized:
                 Eclipse::IntVec2& size = std::get<Eclipse::Event::WindowResizeEvent>(event.data).size;
                 window_size = size;
+                std::println("Window Size changed by {} {}", size.x, size.y);
                 break;
         }
     }
@@ -47,10 +49,19 @@ int main(int argc, char* argv[]) {
 
     Eclipse::Window::Window* main_window = Eclipse::Window::Create(window_create_info);
 
+    Eclipse::GraphicsServer::CreateInfo graphicsserver_create_info{};
+    graphicsserver_create_info.mempool = main_memory_pool;
+    graphicsserver_create_info.window = main_window;
+
+    Eclipse::GraphicsServer::GraphicsServer* graphics_server = Eclipse::GraphicsServer::Create(graphicsserver_create_info);
+
+    Eclipse::FloatVec4 clearcolor = {0.0f, 0.0f, 0.0f, 0.0f};
+
     while (!shouldClose) {
         Eclipse::Window::Poll(main_window);
-
         ProccessEvents(event_pool);
+
+        graphics_server->clear(clearcolor);
 
         Eclipse::Window::Update(main_window);
     }

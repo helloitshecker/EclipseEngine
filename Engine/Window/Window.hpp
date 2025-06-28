@@ -9,6 +9,12 @@
 
 namespace Eclipse {
     namespace Window {
+
+        enum class RenderBackend {
+            GL,
+            VK
+        };
+
         struct CreateInfo {
             std::string title;
             Eclipse::IntVec2 size;
@@ -17,10 +23,12 @@ namespace Eclipse {
             bool adaptiveresolution;
             Eclipse::MemoryPool::MemoryPool* mempool;
             Eclipse::EventPool::EventPool* eventpool;
+            RenderBackend backend;
         };
         struct Window {
             void* ptr;
             Eclipse::EventPool::EventPool* eventpool;
+            RenderBackend backend;
         };
 
         Window* Create(CreateInfo&);
