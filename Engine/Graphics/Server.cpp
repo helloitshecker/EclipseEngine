@@ -16,7 +16,7 @@ Eclipse::GraphicsServer::GraphicsServer* Eclipse::GraphicsServer::Create(CreateI
         server->clear = &Eclipse::GLServer::GL_Clear;
     }
     else if (create_info.window->backend == Eclipse::Window::RenderBackend::VK) {
-
+        ECL_ASSERT(false, "Vulkan Backend not available!");
     }
 
     return server;

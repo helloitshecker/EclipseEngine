@@ -12,13 +12,35 @@ void ProccessEvents(Eclipse::EventPool::EventPool* pool) {
     for (size_t i = 0; i < pool->enumerator; i++) {
         Eclipse::Event::Event& event = pool->events[i];
         switch (event.type) {
-            case Eclipse::Event::Type::Exit:
+            case Eclipse::Event::Type::Exit: {
                 shouldClose = true;
                 break;
-            case Eclipse::Event::Type::WindowResized:
-                Eclipse::IntVec2& size = std::get<Eclipse::Event::WindowResizeEvent>(event.data).size;
+            }
+            case Eclipse::Event::Type::WindowResize: {
+                Eclipse::IntVec2& size = event.data.windowResize.size;
                 window_size = size;
                 break;
+            }
+            case Eclipse::Event::Type::KeyDown: {
+                uint32_t keycode = event.data.keyDown.code;
+                break;
+            }
+            case Eclipse::Event::Type::KeyUp: {
+                uint32_t keycode = event.data.keyUp.code;
+                break;
+            }
+            case Eclipse::Event::Type::MouseMove: {
+                Eclipse::Event::MouseMove e = event.data.mouseMove;
+                break;
+            }
+            case Eclipse::Event::Type::MouseDown: {
+                uint32_t keycode = event.data.mouseDown.code;
+                break;
+            }
+            case Eclipse::Event::Type::MouseUp: {
+                uint32_t keycode = event.data.mouseUp.code;
+                break;
+            }
         }
     }
 

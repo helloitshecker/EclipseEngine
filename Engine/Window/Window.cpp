@@ -48,13 +48,28 @@ void Eclipse::Window::Poll(Window* state) {
                 current.type = Eclipse::Event::Type::Exit;
                 break;
             case SDL_EVENT_WINDOW_RESIZED:
-                current.type = Eclipse::Event::Type::WindowResized;
-                current.data = Eclipse::Event::WindowResizeEvent {
-                    {
-                        static_cast<int>(event.window.data1),
-                        static_cast<int>(event.window.data2)
-                    }
-                };
+                current.type = Eclipse::Event::Type::WindowResize;
+                current.data.windowResize = {static_cast<int>(event.window.data1), static_cast<int>(event.window.data2)};
+                break;
+            case SDL_EVENT_KEY_DOWN:
+                current.type = Eclipse::Event::Type::KeyDown;
+                current.data.keyDown = {static_cast<uint32_t>(event.key.scancode)};
+                break;
+            case SDL_EVENT_KEY_UP:
+                current.type = Eclipse::Event::Type::KeyUp;
+                current.data.keyUp = {static_cast<uint32_t>(event.key.scancode)};
+                break;
+            case SDL_EVENT_MOUSE_MOTION:
+                current.type = Eclipse::Event::Type::MouseMove;
+                current.data.mouseMove = {.position = {event.motion.x, event.motion.y}, .relative_position = {event.motion.xrel, event.motion.yrel}};
+                break;
+            case SDL_EVENT_MOUSE_BUTTON_DOWN:
+                current.type = Eclipse::Event::Type::MouseDown;
+                current.data.mouseDown = {.code = event.button.button};
+                break;
+            case SDL_EVENT_MOUSE_BUTTON_UP:
+                current.type = Eclipse::Event::Type::MouseUp;
+                current.data.mouseUp = {.code = event.button.button};
                 break;
             default:
                 valid = false;
