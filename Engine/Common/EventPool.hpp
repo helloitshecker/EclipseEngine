@@ -11,7 +11,7 @@ namespace Eclipse {
         struct CreateInfo {
             std::size_t max_events;
             std::string dispatch_file;
-            Eclipse::MemoryPool::MemoryPool* pool;
+            Eclipse::Memory::Pool::Pool* pool;
         };
         struct EventPool {
             std::vector<Eclipse::Event::Event> events;

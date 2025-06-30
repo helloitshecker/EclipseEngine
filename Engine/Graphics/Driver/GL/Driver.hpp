@@ -8,7 +8,7 @@ namespace Eclipse {
 
         struct CreateInfo {
             Eclipse::Window::Window* window;
-            Eclipse::MemoryPool::MemoryPool* mempool;
+            Eclipse::Memory::Pool::Pool* mempool;
         };
 
         struct GLServer {

@@ -4,7 +4,7 @@
 
 Eclipse::GraphicsServer::GraphicsServer* Eclipse::GraphicsServer::Create(CreateInfo& create_info) {
 
-    Eclipse::GraphicsServer::GraphicsServer* server = Eclipse::MemoryPool::Allocate<Eclipse::GraphicsServer::GraphicsServer>(create_info.mempool, 1);
+    Eclipse::GraphicsServer::GraphicsServer* server = Eclipse::Memory::Allocate<Eclipse::GraphicsServer::GraphicsServer>(create_info.mempool, 1);
 
     if (create_info.window->backend == Eclipse::Window::RenderBackend::GL) {
         Eclipse::GLServer::CreateInfo ci{};

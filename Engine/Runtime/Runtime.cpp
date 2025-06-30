@@ -49,10 +49,10 @@ void ProccessEvents(Eclipse::EventPool::EventPool* pool) {
 }
 
 int main(int argc, char* argv[]) {
-    Eclipse::MemoryPool::CreateInfo mempool_create_info{};
+    Eclipse::Memory::Pool::CreateInfo mempool_create_info{};
     mempool_create_info.size = 4096;
 
-    Eclipse::MemoryPool::MemoryPool* main_memory_pool = Eclipse::MemoryPool::Create(mempool_create_info);
+    Eclipse::Memory::Pool::Pool* main_memory_pool = Eclipse::Memory::Pool::Create(mempool_create_info);
 
     Eclipse::EventPool::CreateInfo eventpool_create_info{};
     eventpool_create_info.max_events = 32;
@@ -92,5 +92,5 @@ int main(int argc, char* argv[]) {
     }
 
     Eclipse::Window::Destroy(main_window);
-    Eclipse::MemoryPool::Destroy(main_memory_pool);
+    Eclipse::Memory::Pool::Destroy(main_memory_pool);
 }

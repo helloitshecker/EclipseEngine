@@ -2,7 +2,7 @@
 #include <SDL3/SDL.h>
 
 Eclipse::Window::Window* Eclipse::Window::Create(CreateInfo& create_info) {
-    Window* ws = Eclipse::MemoryPool::Allocate<Window>(create_info.mempool, 1);
+    Window* ws = Eclipse::Memory::Allocate<Window>(create_info.mempool, 1);
     ECL_ASSERT(ws != nullptr, "Window Could not be allocated!");
 
     SDL_Window* window;

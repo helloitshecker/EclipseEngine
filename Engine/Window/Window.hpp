@@ -21,7 +21,7 @@ namespace Eclipse {
             bool resizable;
             bool fullscreen;
             bool adaptiveresolution;
-            Eclipse::MemoryPool::MemoryPool* mempool;
+            Eclipse::Memory::Pool::Pool* mempool;
             Eclipse::EventPool::EventPool* eventpool;
             RenderBackend backend;
         };

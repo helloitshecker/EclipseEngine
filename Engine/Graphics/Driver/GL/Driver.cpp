@@ -10,7 +10,7 @@ Eclipse::GLServer::GLServer* Eclipse::GLServer::Create(CreateInfo& create_info) 
 
     ECL_ASSERT(gladLoadGLLoader((GLADloadproc)SDL_GL_GetProcAddress), "Failed to load GL Function Pointers!");
 
-    Eclipse::GLServer::GLServer* ptr = Eclipse::MemoryPool::Allocate<Eclipse::GLServer::GLServer>(create_info.mempool, 1);
+    Eclipse::GLServer::GLServer* ptr = Eclipse::Memory::Allocate<Eclipse::GLServer::GLServer>(create_info.mempool, 1);
     ptr->glcontext = glcontext;
 
     return ptr;
