@@ -9,6 +9,8 @@ set(BUILD_SHARED_LIBS OFF)
 include_directories(${CMAKE_SOURCE_DIR})
 find_package(SDL3 CONFIG REQUIRED)
 
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
+
 add_library(Engine_Core
         Engine/Core/Types.h
         Engine/Core/Memory.c
@@ -41,3 +43,7 @@ target_link_libraries(Engine_Runtime
         PUBLIC Engine_Renderer
         PUBLIC Engine_System
 )
+
+add_subdirectory(Engine/Renderer/GL)
+
+add_dependencies(Engine_Runtime Engine_Renderer_EXT_GL)

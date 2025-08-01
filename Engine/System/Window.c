@@ -31,6 +31,9 @@ EWindow* eWindow_Create(EWindow_CreateInfo* info) {
         EWindow* returnPtr = eMemory_Alloc(info->memory, sizeof(EWindow));
         returnPtr->ptr = (void*)sWindow;
 
+        if (info->render_api == GL)
+                returnPtr->glcontext = SDL_GL_CreateContext(sWindow);
+
         return returnPtr;
 }
 
@@ -130,4 +133,8 @@ void eWindow_PollEvent(EWindow* window, EEventQueue* events) {
                         default: ;
                 }
         }
+}
+
+void eWindow_Swap(EWindow* window) {
+        SDL_GL_SwapWindow(window->ptr);
 }

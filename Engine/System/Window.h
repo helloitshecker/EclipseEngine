@@ -6,6 +6,7 @@
 
 typedef struct {
         void* ptr;
+        void* glcontext;
 } EWindow;
 
 typedef struct {
@@ -23,3 +24,4 @@ EWindow* eWindow_Create(EWindow_CreateInfo* info);
 void eWindow_Destroy(EWindow* window);
 
 void eWindow_PollEvent(EWindow* window, EEventQueue* events);
+void eWindow_Swap(EWindow* window);
