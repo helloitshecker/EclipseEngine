@@ -19,6 +19,7 @@ typedef struct {
         void (*DestroyDevice)();
         void (*Clear)(u8 r, u8 g, u8 b, u8 a);
         void (*SetViewport)(i32 x, i32 y, i32 width, i32 height);
+        void (*SetVsync)(bool on);
 } ERenderDevice_Layout;
 
 typedef ERenderDevice_Layout* (*PFN_GetRenderDeviceLayout)(void);

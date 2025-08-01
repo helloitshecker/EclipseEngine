@@ -19,6 +19,7 @@
 #define f64 double
 #define b32 i32
 #define b64 i64
+#define thread_local _Thread_local
 
 #define ESUCCESS 0
 #define EFAILURE 1
@@ -26,3 +27,8 @@
 typedef enum {
          GL,VK,METAL
 } EApi;
+
+typedef struct {
+        char* content;
+        u64 contentSize;
+} EString;

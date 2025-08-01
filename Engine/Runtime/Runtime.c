@@ -3,8 +3,12 @@
 #include <Engine/Core/Memory.h>
 #include <Engine/System/Window.h>
 #include <Engine/Renderer/Renderer.h>
+#include <Engine/Core/Time.h>
+#include <SDL3/SDL_timer.h>
 
 ERenderDevice_Layout* rd_layout;
+f64 delta;
+bool vsync;
 
 void ProcessPollEvents(bool* running, EEventQueue* events) {
         for (u8 i = 0; i < events->count; i++) {
@@ -46,6 +50,11 @@ void ProcessPollEvents(bool* running, EEventQueue* events) {
                         case EEVENT_TYPE_KEYBOARD: {
                                 const EEvent_Type_Keyboard keyboard = events->queue[i].keyboard;
                                 EINFO("Keyboard Button [%d] %s!", keyboard.code, keyboard.down?("PRESSED"):("RELEASED"));
+                                if (events->queue[i].keyboard.code == 118 && !events->queue[i].keyboard.down) {
+                                        EINFO("Turning Vsync %s!", vsync?"OFF":"ON");
+                                        rd_layout->SetVsync(vsync);
+                                        vsync = !vsync;
+                                }
                         } break;
                         default: ;
                 }
@@ -82,11 +91,18 @@ int main() {
         rd_layout->SetViewport(0, 0, windowCreateInfo.width, windowCreateInfo.height);
 
         bool running = true;
+        f64 previous = 0;
         while (running) {
+                f64 current = eTime_GetHighResClock();
+                delta = current - previous;
+                previous = current;
+
+                printf("\rFPS: %f         ",    1/delta);
+
                 eWindow_PollEvent(window, events);
                 ProcessPollEvents(&running, events);
 
-                rd_layout->Clear(255, 255, 255, 255);
+                rd_layout->Clear(0,0,0,255);
 
                 eWindow_Swap(window);
         }

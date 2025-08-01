@@ -1,6 +1,8 @@
 #include "RenderDevice.h"
 #include <SDL3/SDL.h>
 
+thread_local EWindow* gWindow;
+
 bool EXT_GL_CreateDevice(EWindow* window) {
         EDEBUG("Hello from Render Device!");
 
@@ -14,6 +16,8 @@ bool EXT_GL_CreateDevice(EWindow* window) {
                 EDEBUG("Successfully initialized OpenGL context");
         }
 
+        gWindow = window;
+
         return ESUCCESS;
 }
 
@@ -26,15 +30,20 @@ void EXT_GL_Clear(u8 r, u8 g, u8 b, u8 a) {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
-void EXT_Set_Viewport(i32 x, i32 y, i32 width, i32 height) {
+void EXT_GL_Set_Viewport(i32 x, i32 y, i32 width, i32 height) {
         glViewport(x, y, width, height);
+}
+
+void EXT_GL_Set_Vsync(bool on) {
+        SDL_GL_SetSwapInterval(on);
 }
 
 static ERenderDevice_Layout layout = {
         .CreateDevice = EXT_GL_CreateDevice,
         .DestroyDevice = EXT_GL_DestroyDevice,
         .Clear = EXT_GL_Clear,
-        .SetViewport = EXT_Set_Viewport,
+        .SetViewport = EXT_GL_Set_Viewport,
+        .SetVsync = EXT_GL_Set_Vsync,
 };
 
 EEXPORT ERenderDevice_Layout* ERenderDevice_GetLayout(void) {

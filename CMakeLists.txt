@@ -17,6 +17,10 @@ add_library(Engine_Core
         Engine/Core/Memory.h
         Engine/Core/Debug.h
         Engine/Core/Events.h
+        Engine/Core/Time.h
+        Engine/Core/Time.c
+        Engine/Core/FileSystem.c
+        Engine/Core/FileSystem.h
 )
 
 add_library(Engine_Renderer
@@ -27,6 +31,11 @@ add_library(Engine_Renderer
 add_library(Engine_System
         Engine/System/Window.c
         Engine/System/Window.h
+)
+
+add_library(Engine_Shaders
+        Engine/Shaders/Shader.c
+        Engine/Shaders/Shader.h
 
 )
 
@@ -34,14 +43,15 @@ add_executable(Engine_Runtime
         Engine/Runtime/Runtime.c
 )
 
-target_link_libraries(Engine_System
-    PRIVATE SDL3::SDL3
-)
+target_link_libraries(Engine_System SDL3::SDL3)
+target_link_libraries(Engine_Core SDL3::SDL3)
 
 target_link_libraries(Engine_Runtime
         PUBLIC Engine_Core
         PUBLIC Engine_Renderer
         PUBLIC Engine_System
+        PUBLIC SDL3::SDL3
+        PUBLIC Engine_Shaders
 )
 
 add_subdirectory(Engine/Renderer/GL)
