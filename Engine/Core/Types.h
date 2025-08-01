@@ -15,6 +15,10 @@
 #define i16 int16_t
 #define i32 int32_t
 #define i64 int64_t
+#define f32 float
+#define f64 double
+#define b32 i32
+#define b64 i64
 
 #define ESUCCESS 0
 #define EFAILURE 1

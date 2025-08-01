@@ -16,10 +16,10 @@ typedef struct {
         bool fullscreen;
         EApi render_api;
         EMemory* memory;
-        EEvents* events;
+        EEventQueue* events;
 } EWindow_CreateInfo;
 
 EWindow* eWindow_Create(EWindow_CreateInfo* info);
 void eWindow_Destroy(EWindow* window);
 
-void eWindow_PollEvent(EWindow* window, EEvents* events);
+void eWindow_PollEvent(EWindow* window, EEventQueue* events);
