@@ -34,6 +34,11 @@ typedef struct {
        u32 code;
 } EEvent_Type_Keyboard;
 
+/**
+ * @brief Union to store all types of events
+ * This makes it a common interface for all events
+ * This contains all the data related to the specific event
+ */
 typedef union {
        EEvent_Type_Window_Resize window_resize;
        EEvent_Type_Window_Focus  window_focus;
@@ -43,6 +48,10 @@ typedef union {
        EEvent_Type_Keyboard keyboard;
 } EEvent;
 
+
+/**
+ * @brief Type of event
+ */
 typedef enum {
        EEVENT_TYPE_WINDOW_RESIZE,
        EEVENT_TYPE_WINDOW_CLOSE,
@@ -57,16 +66,27 @@ typedef enum {
 
 } EEvent_Type;
 
+/**
+ * @brief Queue to store all events
+ */
 typedef struct {
-       EEvent queue[256];
-       EEvent_Type types[256];
-       u8 count;
+       EEvent queue[256];          ///<All Queue Objects
+       EEvent_Type types[256];     ///<All Queue Objects Types
+       u8 count;                   ///<Total Queues with data which should be used
 } EEventQueue;
 
+/**
+ * @brief CreateInfo struct which takes in EMemory* for memory allocation
+ */
 typedef struct {
-       EMemory* memory;
+       EMemory* memory;            ///<Memory Struct for use with eMemory_Alloc
 } EEvents_CreateInfo;
 
+/**
+ *
+ * @param createInfo Allocates Memory for Event Queue
+ * @return Event Queue struct Pointer
+ */
 inline EEventQueue* eEvents_Create(EEvents_CreateInfo* createInfo) {
        return eMemory_Alloc(createInfo->memory, sizeof(EEventQueue));
 }

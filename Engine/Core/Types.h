@@ -1,5 +1,6 @@
 #pragma once
 
+// Null Pointer
 #define nullptr ((void*)0)
 
 #include <ctype.h>
@@ -29,6 +30,6 @@ typedef enum {
 } EApi;
 
 typedef struct {
-        char* content;
-        u64 contentSize;
+        char* content;          ///<Contains raw file content
+        u64 contentSize;        ///<Contains File Size (real file size + 1) (for null terminator)
 } EString;

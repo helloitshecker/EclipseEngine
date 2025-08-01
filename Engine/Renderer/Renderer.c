@@ -4,8 +4,10 @@
 #include <windows.h>
 #endif
 
+thread_local HMODULE dll;
+
 ERenderDevice_Layout* eRenderer_Create(ERenderer_CreateInfo* createInfo) {
-        HMODULE dll = LoadLibraryA(createInfo->fileName);
+        dll = LoadLibraryA(createInfo->fileName);
         ERUN_MSG(!dll, "Failed to load renderer library from '%s'!", createInfo->fileName);
         if (!dll) return nullptr;
 
@@ -20,5 +22,7 @@ ERenderDevice_Layout* eRenderer_Create(ERenderer_CreateInfo* createInfo) {
 }
 
 void eRenderer_Destroy(ERenderDevice_Layout* renderDevice) {
-
+        EDEBUG("Destroying render device!");
+        FreeLibrary(dll);
+        renderDevice = nullptr;
 }
