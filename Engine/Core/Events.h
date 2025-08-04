@@ -87,6 +87,6 @@ typedef struct {
  * @param createInfo Allocates Memory for Event Queue
  * @return Event Queue struct Pointer
  */
-inline EEventQueue* eEvents_Create(EEvents_CreateInfo* createInfo) {
+static inline EEventQueue* eEvents_Create(EEvents_CreateInfo* createInfo) {
        return eMemory_Alloc(createInfo->memory, sizeof(EEventQueue));
 }

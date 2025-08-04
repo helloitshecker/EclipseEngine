@@ -4,8 +4,8 @@
 #include <stdlib.h>
 
 EString* eFileSystem_ReadFile(EMemory* memory, const char* filepath, bool binary) {
-        FILE* file;
-        if (fopen_s(&file, filepath, binary?"rb":"r") != 0) {
+        FILE *file = fopen(filepath, binary ? "rb" : "r");
+        if (!file) {
                 EERROR("Failed to read file \"%s\"", filepath);
                 return nullptr;
         }

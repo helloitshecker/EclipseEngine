@@ -82,7 +82,11 @@ int main() {
         EWindow* window = eWindow_Create(&windowCreateInfo);
 
         ERenderer_CreateInfo rendererCreateInfo = {0};
-        rendererCreateInfo.fileName = "Engine_Renderer_EXT_GL.dll";
+#ifdef _WIN32
+        rendererCreateInfo.fileName = "Engine/Renderer/GL/Engine_Renderer_EXT_GL.dll";
+#elif __linux__
+        rendererCreateInfo.fileName = "Engine/Renderer/GL/libEngine_Renderer_EXT_GL.so";
+#endif
         rendererCreateInfo.api = GL;
         rd_layout = eRenderer_Create(&rendererCreateInfo);
         if (!rd_layout) {
