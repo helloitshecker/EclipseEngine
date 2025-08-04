@@ -7,10 +7,17 @@
 EMemory* eMemory_Create(const u64 size) {
         EDEBUG("Allocating %llu memory!", size);
         EMemory* out = (EMemory*)malloc(sizeof(EMemory));
-        EASSERT(out);
+        if (out == nullptr) {
+                EERROR("Failed to allocate memory!");
+                return nullptr;
+        }
 
         out->start = (uintptr)malloc(size);
-        EASSERT(out->start);
+        if (out->start == 0) {
+                EERROR("Failed to allocate memory!");
+                free(out);
+                return nullptr;
+        }
         out->end = out->start + size;
         out->current = out->start;
 
@@ -25,13 +32,16 @@ void eMemory_Destroy(EMemory* memory) {
 }
 
 void* eMemory_Alloc(EMemory* mem, const u64 size) {
-        EDEBUG("Allocating %llu memory from pool!", size);
-        EASSERT_MSG(mem->end-mem->current > size, "Memory Pool Overflow Error!");
+        EDEBUG("%llu bytes requested from pool!", size);
+        if (mem->end-mem->current < size) {
+                EERROR("Memory allocation failed!");
+                return nullptr;
+        }
 
         void* returnPtr = (void*)mem->current;
         mem->current += size;
 
-        EDEBUG("Memory Status: %llu/%llu memory!", mem->end-mem->current, mem->end-mem->start);
+        EDEBUG("Memory Status: Used %llu/%llu bytes", mem->end-mem->current, mem->end-mem->start);
 
         return returnPtr;
 }

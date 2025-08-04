@@ -35,7 +35,7 @@ typedef struct {
 } EEvent_Type_Keyboard;
 
 /**
- * @brief Union to store all types of events
+ * @brief Union to store all types of event's data
  * This makes it a common interface for all events
  * This contains all the data related to the specific event
  */

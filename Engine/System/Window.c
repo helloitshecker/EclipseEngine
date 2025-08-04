@@ -5,9 +5,15 @@
 #include <Engine/Core/Debug.h>
 
 EWindow* eWindow_Create(EWindow_CreateInfo* info) {
-        EASSERT(SDL_Init(SDL_INIT_VIDEO) > 0);
+        if (SDL_Init(SDL_INIT_VIDEO) < 0) {
+                EERROR("Failed to initialize SDL");
+                return nullptr;
+        }
         EWindow* pWindow = eMemory_Alloc(info->memory, sizeof(EWindow));
-        EASSERT(pWindow);
+        if (!pWindow) {
+                EERROR("Failed to allocate window memory");
+                return nullptr;
+        }
 
         SDL_WindowFlags window_flags = info->resizable?SDL_WINDOW_RESIZABLE:0 | info->fullscreen?SDL_WINDOW_FULLSCREEN:0;
         if (info->render_api == GL) {
@@ -26,7 +32,10 @@ EWindow* eWindow_Create(EWindow_CreateInfo* info) {
         }
 
         SDL_Window* sWindow = SDL_CreateWindow(info->title, info->width, info->height, window_flags);
-        EASSERT_MSG(sWindow, "Error creating window!\nERROR: %s", SDL_GetError());
+        if (!sWindow) {
+                EERROR("Error creating window!\nERROR: %s", SDL_GetError());
+                return nullptr;
+        }
 
         EWindow* returnPtr = eMemory_Alloc(info->memory, sizeof(EWindow));
         returnPtr->ptr = (void*)sWindow;

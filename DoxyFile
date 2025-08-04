@@ -35,7 +35,7 @@ PROJECT_NUMBER         = 0.0.1
 
 PROJECT_BRIEF          = "A Game Engine that works on my computer"
 
-PROJECT_LOGO           = "favicon.jpg"
+PROJECT_LOGO           = "favicon.png"
 
 PROJECT_ICON           = "favicon_1b1.jpg"
 

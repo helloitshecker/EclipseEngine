@@ -35,7 +35,9 @@ void EXT_GL_Set_Viewport(i32 x, i32 y, i32 width, i32 height) {
 }
 
 void EXT_GL_Set_Vsync(bool on) {
-        SDL_GL_SetSwapInterval(on);
+        if (SDL_GL_SetSwapInterval(on) < 0) {
+                EERROR("Failed to %s vsync!", on?"disable":"enable");
+        }
 }
 
 static ERenderDevice_Layout layout = {

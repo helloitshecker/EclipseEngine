@@ -4,7 +4,7 @@
 #include <Engine/System/Window.h>
 #include <Engine/Renderer/Renderer.h>
 #include <Engine/Core/Time.h>
-#include <SDL3/SDL_timer.h>
+#include <Engine/Core/FileSystem.h>
 
 ERenderDevice_Layout* rd_layout;
 f64 delta;
@@ -41,7 +41,7 @@ void ProcessPollEvents(bool* running, EEventQueue* events) {
                                 EINFO("Window Display Changed to %llu!", events->queue[i].window_display.display_id);
                         } break;
                         case EEVENT_TYPE_MOUSE_MOVE: {
-                                const EEvent_Type_Mouse_Move mouse_move = events->queue[i].mouse_move;
+                                // const EEvent_Type_Mouse_Move mouse_move = events->queue[i].mouse_move;
                                 // EINFO("Mouse Moved to x:%f y:%f relx:%f rely:%f", mouse_move.x, mouse_move.y, mouse_move.rx, mouse_move.ry);
                         } break;
                         case EEVENT_TYPE_MOUSE_BUTTON: {
@@ -85,19 +85,25 @@ int main() {
         rendererCreateInfo.fileName = "Engine_Renderer_EXT_GL.dll";
         rendererCreateInfo.api = GL;
         rd_layout = eRenderer_Create(&rendererCreateInfo);
-        EASSERT(rd_layout);
-        EASSERT(rd_layout->CreateDevice(window) == ESUCCESS);
+        if (!rd_layout) {
+                EERROR("Failed to create renderer!");
+                return EFAILURE;
+        }
+        if (rd_layout->CreateDevice(window) == EFAILURE) {
+                EERROR("Failed to initialize renderer!");
+                return EFAILURE;
+        }
 
         rd_layout->SetViewport(0, 0, windowCreateInfo.width, windowCreateInfo.height);
 
         bool running = true;
         f64 previous = 0;
         while (running) {
-                f64 current = eTime_GetHighResClock();
+                const f64 current = eTime_GetSeconds();
                 delta = current - previous;
                 previous = current;
 
-                printf("\rFPS: %f         ",    1/delta);
+                // printf("\rFPS: %f         ",    1/delta);
 
                 eWindow_PollEvent(window, events);
                 ProcessPollEvents(&running, events);
@@ -106,6 +112,9 @@ int main() {
 
                 eWindow_Swap(window);
         }
+
+        const EString* file1 = eFileSystem_ReadFile(memory, "../nigga.txt", false);
+        EINFO("File content: %s", file1->content);
 
         rd_layout->DestroyDevice();
         eWindow_Destroy(window);
