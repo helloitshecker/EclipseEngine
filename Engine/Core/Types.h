@@ -33,3 +33,10 @@ typedef struct {
         char* content;          ///<Contains raw file content
         u64 contentSize;        ///<Contains File Size (real file size + 1) (for null terminator)
 } EString;
+
+typedef struct {
+        i32 w;
+        i32 h;
+} Vec2;
+
+typedef char* EStringView;

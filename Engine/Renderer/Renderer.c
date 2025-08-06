@@ -7,20 +7,23 @@
 #endif
 
 #ifdef _WIN32
-thread_local HMODULE dll;
+static HMODULE dll;
 #elif defined(__linux__)
-__thread void* dll;
+static void* dll;
 #endif
 
-ERenderDevice_Layout* eRenderer_Create(ERenderer_CreateInfo* createInfo) {
+ERenderDevice_Layout* eRenderer_Create(EApi api) {
+    EStringView filename;
 #ifdef _WIN32
-    dll = LoadLibraryA(createInfo->fileName);
+    filename = api==GL?"Engine/Renderer/GL/Engine_Renderer_EXT_GL.dll":"Engine/Renderer/GL/Engine_Renderer_EXT_VK.dll";
+    dll = LoadLibraryA(filename);
 #elif defined(__linux__)
-    dll = dlopen(createInfo->fileName, RTLD_NOW);
+    filename = api==GL?"Engine/Renderer/GL/libEngine_Renderer_EXT_GL.so":"Engine/Renderer/GL/libEngine_Renderer_EXT_VK.so"
+    dll = dlopen(filename, RTLD_NOW);
 #endif
 
     if (!dll) {
-        EERROR("Failed to load renderer library from '%s'!", createInfo->fileName);
+        EERROR("Failed to load renderer library from '%s'!", filename);
         return nullptr;
     }
 
@@ -50,5 +53,4 @@ void eRenderer_Destroy(ERenderDevice_Layout* renderDevice) {
 #elif defined(__linux__)
     dlclose(dll);
 #endif
-    renderDevice = nullptr;
 }

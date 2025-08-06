@@ -5,17 +5,20 @@
 #include <Engine/Renderer/Renderer.h>
 #include <Engine/Core/Time.h>
 #include <Engine/Core/FileSystem.h>
+#include <Engine/Scripting/Scripting.h>
 
 ERenderDevice_Layout* rd_layout;
 f64 delta;
 bool vsync;
+i32 g_width;
+i32 g_height;
 
 void ProcessPollEvents(bool* running, EEventQueue* events) {
         for (u8 i = 0; i < events->count; i++) {
                 switch (events->types[i]) {
                         case EEVENT_TYPE_WINDOW_RESIZE: {
                                 EINFO("Window Resized to (%d, %d)", events->queue[i].window_resize.width, events->queue[i].window_resize.height);
-                                rd_layout->SetViewport(0, 0, events->queue[i].window_resize.width, events->queue[i].window_resize.height);
+                                // rd_layout->SetViewport(0, 0, events->queue[i].window_resize.width, events->queue[i].window_resize.height);
                         } break;
                         case EEVENT_TYPE_WINDOW_CLOSE: {
                                 EINFO("Window Close Requested!");
@@ -52,7 +55,7 @@ void ProcessPollEvents(bool* running, EEventQueue* events) {
                                 EINFO("Keyboard Button [%d] %s!", keyboard.code, keyboard.down?("PRESSED"):("RELEASED"));
                                 if (events->queue[i].keyboard.code == 118 && !events->queue[i].keyboard.down) {
                                         EINFO("Turning Vsync %s!", vsync?"OFF":"ON");
-                                        rd_layout->SetVsync(vsync);
+                                        // rd_layout->SetVsync(vsync);
                                         vsync = !vsync;
                                 }
                         } break;
@@ -63,42 +66,24 @@ void ProcessPollEvents(bool* running, EEventQueue* events) {
 
 int main() {
         // Initialize Memory Pool
-        EMemory* memory = eMemory_Create(8096);
+        EMemory* memory = eMemory_Create(18096);
+
+        // Initialize Scripting
+        eScript_Create();
 
         // Initialize Events System
         EEvents_CreateInfo events_CreateInfo = {memory};
         EEventQueue* events = eEvents_Create(&events_CreateInfo);
 
-        // Initialize Window
-        EWindow_CreateInfo windowCreateInfo = {0};
-        windowCreateInfo.title = "Eclipse Engine Runtime!";
-        windowCreateInfo.width = 1024;
-        windowCreateInfo.height = 768;
-        windowCreateInfo.resizable = true;
-        windowCreateInfo.fullscreen = false;
-        windowCreateInfo.render_api = GL;
-        windowCreateInfo.memory = memory;
-        windowCreateInfo.events = events;
-        EWindow* window = eWindow_Create(&windowCreateInfo);
+        eWindow_Simple_SetMemoryAndEventQueue(memory, events);
+        eScript_Run();
 
-        ERenderer_CreateInfo rendererCreateInfo = {0};
-#ifdef _WIN32
-        rendererCreateInfo.fileName = "Engine/Renderer/GL/Engine_Renderer_EXT_GL.dll";
-#elif __linux__
-        rendererCreateInfo.fileName = "Engine/Renderer/GL/libEngine_Renderer_EXT_GL.so";
-#endif
-        rendererCreateInfo.api = GL;
-        rd_layout = eRenderer_Create(&rendererCreateInfo);
-        if (!rd_layout) {
-                EERROR("Failed to create renderer!");
-                return EFAILURE;
-        }
-        if (rd_layout->CreateDevice(window) == EFAILURE) {
-                EERROR("Failed to initialize renderer!");
-                return EFAILURE;
-        }
+        eScript_CallInit();
 
-        rd_layout->SetViewport(0, 0, windowCreateInfo.width, windowCreateInfo.height);
+        EWindow* window = eWindow_Simple_GetWindowHandle();
+        Vec2 w_size = eWindow_Simple_GetWindowSize();
+        g_width = w_size.w;
+        g_height = w_size.h;
 
         bool running = true;
         f64 previous = 0;
@@ -107,20 +92,23 @@ int main() {
                 delta = current - previous;
                 previous = current;
 
+                eScript_Update(delta);
+
                 // printf("\rFPS: %f         ",    1/delta);
 
-                eWindow_PollEvent(window, events);
+                eWindow_Simple_PollEvent();
                 ProcessPollEvents(&running, events);
 
-                rd_layout->Clear(0,0,0,255);
+                // rd_layout->Clear(0,0,0,255);
 
-                eWindow_Swap(window);
+                eWindow_Simple_Swap();
         }
 
         const EString* file1 = eFileSystem_ReadFile(memory, "../nigga.txt", false);
         EINFO("File content: %s", file1->content);
 
-        rd_layout->DestroyDevice();
-        eWindow_Destroy(window);
+        // rd_layout->DestroyDevice();
+        eWindow_Simple_Destroy(window);
+        eScript_Destroy();
         eMemory_Destroy(memory);
 }

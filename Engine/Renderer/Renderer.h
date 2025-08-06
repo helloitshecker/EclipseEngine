@@ -4,17 +4,12 @@
 #include <Engine/Renderer/GL/Driver/RenderDevice.h>
 #include <Engine/System/Window.h>
 
-typedef struct {
-        EApi api;               ///<Render Backend
-        const char* fileName;   ///<File name for Renderer DLL (Default Name: Engine_Renderer_EXT_GL.dll)
-} ERenderer_CreateInfo;
-
 /**
  * @brief Load's Renderer DLL and maps all functions to Layout
- * @param createInfo CreateInfo
+ * @param api Api request for renderer
  * @return Mapped Functions from DLL for rendering
  */
-ERenderDevice_Layout* eRenderer_Create(ERenderer_CreateInfo* createInfo);
+ERenderDevice_Layout* eRenderer_Create(EApi api);
 
 /**
  * @brief Deallocates DLL and Layout Table

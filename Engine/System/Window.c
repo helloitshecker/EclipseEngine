@@ -4,18 +4,20 @@
 #include <Engine/Core/Types.h>
 #include <Engine/Core/Debug.h>
 
+
+static thread_local EMemory* g_memory = nullptr;
+static thread_local EEventQueue* g_eventqueue = nullptr;
+static thread_local EWindow* g_window = nullptr;
+
 EWindow* eWindow_Create(EWindow_CreateInfo* info) {
-        if (SDL_Init(SDL_INIT_VIDEO) < 0) {
-                EERROR("Failed to initialize SDL");
-                return nullptr;
-        }
+        SDL_Init(SDL_INIT_VIDEO);
         EWindow* pWindow = eMemory_Alloc(info->memory, sizeof(EWindow));
         if (!pWindow) {
                 EERROR("Failed to allocate window memory");
                 return nullptr;
         }
 
-        SDL_WindowFlags window_flags = info->resizable?SDL_WINDOW_RESIZABLE:0 | info->fullscreen?SDL_WINDOW_FULLSCREEN:0;
+        SDL_WindowFlags window_flags = (info->resizable?SDL_WINDOW_RESIZABLE:0) | (info->fullscreen?SDL_WINDOW_FULLSCREEN:0);
         if (info->render_api == GL) {
                 EINFO("Initializing OpenGL Window!");
                 SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
@@ -42,6 +44,10 @@ EWindow* eWindow_Create(EWindow_CreateInfo* info) {
 
         if (info->render_api == GL)
                 returnPtr->glcontext = SDL_GL_CreateContext(sWindow);
+
+        g_window = returnPtr;
+        g_memory = info->memory;
+        g_eventqueue = info->events;
 
         return returnPtr;
 }
@@ -146,4 +152,50 @@ void eWindow_PollEvent(EWindow* window, EEventQueue* events) {
 
 void eWindow_Swap(EWindow* window) {
         SDL_GL_SwapWindow(window->ptr);
+}
+
+void eWindow_Simple_SetMemoryAndEventQueue(EMemory* memory, EEventQueue* events) {
+        EDEBUG("Using Window Simple Mode; Setting Memory and Queue!");
+        g_memory = memory;
+        g_eventqueue = events;
+}
+
+EWindow* eWindow_Simple_Create(EStringView title, i32 width, i32 height, bool resizable, bool fullscreen, EApi api) {
+        EWindow_CreateInfo s_window_create_info = {
+                .title =  title,
+                .width = width,
+                .height = height,
+                .resizable = resizable,
+                .fullscreen = fullscreen,
+                .render_api = api,
+                .memory = g_memory,
+                .events = g_eventqueue
+        };
+
+        g_window = eWindow_Create(&s_window_create_info);
+
+        return g_window;
+}
+
+
+void eWindow_Simple_PollEvent() {
+        eWindow_PollEvent(g_window, g_eventqueue);
+}
+
+void eWindow_Simple_Swap() {
+        eWindow_Swap(g_window);
+}
+
+EWindow* eWindow_Simple_GetWindowHandle() {
+        return g_window;
+}
+
+Vec2 eWindow_Simple_GetWindowSize() {
+        Vec2 size = {0 ,0};
+        SDL_GetWindowSize(g_window->ptr, &size.w, &size.h);
+        return size;
+}
+
+void eWindow_Simple_Destroy() {
+        eWindow_Destroy(g_window);
 }

@@ -41,7 +41,7 @@ void* eMemory_Alloc(EMemory* mem, const u64 size) {
         void* returnPtr = (void*)mem->current;
         mem->current += size;
 
-        EDEBUG("Memory Status: Used %llu/%llu bytes", mem->end-mem->current, mem->end-mem->start);
+        EDEBUG("Memory Status: Used %llu/%llu bytes", mem->current-mem->start, mem->end-mem->start);
 
         return returnPtr;
 }
