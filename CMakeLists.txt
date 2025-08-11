@@ -4,18 +4,32 @@ project(EclipseEngine)
 set(CMAKE_C_STANDARD 17)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 set(BUILD_SHARED_LIBS ON)
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
-# Find SDL3 via vcpkg
-find_package(SDL3 CONFIG REQUIRED)
-
-# Manually locate LuaJIT (no config file provided by vcpkg)
+# SDL3
 if (WIN32)
-    set(LUAJIT_INCLUDE_DIR "$ENV{VCPKG_ROOT}/packages/luajit_x64-windows/include/luajit")
-    set(LUAJIT_LIB "$ENV{VCPKG_ROOT}/packages/luajit_x64-windows/lib/lua51.lib")
+    # Use vcpkg on Windows
+    find_package(SDL3 CONFIG REQUIRED)
 else()
-    set(LUAJIT_INCLUDE_DIR "$ENV{VCPKG_ROOT}/packages/luajit_x64-linux/include/luajit")
-    set(LUAJIT_LIB "$ENV{VCPKG_ROOT}/packages/luajit_x64-linux/lib/lua51.a")
+    # Use system-installed SDL3 on Linux
+    find_package(SDL3 REQUIRED CONFIG)
 endif()
+
+# LuaJIT
+if (WIN32)
+    set(LUAJIT_MAIN_DIR $ENV{VCPKG_ROOT}/packages/luajit_x64-windows)
+    set(LUAJIT_INCLUDE_DIR "${LUAJIT_MAIN_DIR}/include/luajit")
+    file(GLOB LUAJIT_LINK "${LUAJIT_MAIN_DIR}/lib/lua*.lib")
+    list(GET LUAJIT_LINK 0 LUAJIT_LIB)
+else()
+    find_package(PkgConfig REQUIRED)
+    pkg_check_modules(LUAJIT REQUIRED luajit)
+    set(LUAJIT_INCLUDE_DIR ${LUAJIT_INCLUDE_DIRS})
+    set(LUAJIT_LIB ${LUAJIT_LIBRARIES})
+endif()
+
+message(STATUS "LuaJIT include: ${LUAJIT_INCLUDE_DIR}")
+message(STATUS "LuaJIT lib: ${LUAJIT_LIB}")
 
 # Engine_Core
 add_library(Engine_Core STATIC
@@ -62,7 +76,7 @@ add_executable(Engine_Runtime
 target_include_directories(Engine_Runtime PUBLIC ${CMAKE_SOURCE_DIR})
 
 # Linking
-target_link_libraries(Engine_Scripting PRIVATE ${LUAJIT_LIB} Engine_Core Engine_System)
+target_link_libraries(Engine_Scripting PRIVATE ${LUAJIT_LIB} Engine_Core Engine_System m)
 target_link_libraries(Engine_System PRIVATE SDL3::SDL3 Engine_Core)
 target_link_libraries(Engine_Core PRIVATE SDL3::SDL3)
 target_link_libraries(Engine_Runtime
