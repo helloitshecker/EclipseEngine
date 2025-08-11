@@ -1,5 +1,11 @@
 local ffi = require("ffi")
-local renderLib = ffi.load("Engine/Renderer/GL/Engine_Renderer_EXT_GL.dll")
+local libname
+if ffi.os == "Windows" then
+    libname = "Engine/Renderer/GL/Engine_Renderer_EXT_GL.dll"
+else
+    libname = "Engine/Renderer/GL/libEngine_Renderer_EXT_GL.so"
+end
+local renderLib = ffi.load(libname)
 
 ffi.cdef[[
     typedef unsigned char u8;

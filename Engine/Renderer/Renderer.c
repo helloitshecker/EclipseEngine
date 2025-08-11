@@ -18,7 +18,7 @@ ERenderDevice_Layout* eRenderer_Create(EApi api) {
     filename = api==GL?"Engine/Renderer/GL/Engine_Renderer_EXT_GL.dll":"Engine/Renderer/GL/Engine_Renderer_EXT_VK.dll";
     dll = LoadLibraryA(filename);
 #elif defined(__linux__)
-    filename = api==GL?"Engine/Renderer/GL/libEngine_Renderer_EXT_GL.so":"Engine/Renderer/GL/libEngine_Renderer_EXT_VK.so"
+    filename = api==GL?"Engine/Renderer/GL/libEngine_Renderer_EXT_GL.so":"Engine/Renderer/GL/libEngine_Renderer_EXT_VK.so";
     dll = dlopen(filename, RTLD_NOW);
 #endif
 
