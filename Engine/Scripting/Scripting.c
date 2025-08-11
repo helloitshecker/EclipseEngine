@@ -1,8 +1,8 @@
 #include "Scripting.h"
 
-#include <luajit/lua.h>
-#include <luajit/lauxlib.h>
-#include <luajit/lualib.h>
+#include <lua.h>
+#include <lauxlib.h>
+#include <lualib.h>
 
 #include <Engine/Core/FileSystem.h>
 #include <Engine/Core/Memory.h>
