@@ -9,14 +9,12 @@ set(BUILD_SHARED_LIBS ON)
 find_package(SDL3 CONFIG REQUIRED)
 
 # Manually locate LuaJIT (no config file provided by vcpkg)
-set(LUAJIT_INCLUDE_DIR "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/include/luajit-2.1")
-set(LUAJIT_LIB "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/libluajit-5.1.a")
-
-if(NOT EXISTS "${LUAJIT_INCLUDE_DIR}/lua.h")
-    message(FATAL_ERROR "Could not find LuaJIT headers in ${LUAJIT_INCLUDE_DIR}")
-endif()
-if(NOT EXISTS "${LUAJIT_LIB}")
-    message(FATAL_ERROR "Could not find LuaJIT library in ${LUAJIT_LIB}")
+if (WIN32)
+    set(LUAJIT_INCLUDE_DIR "$ENV{VCPKG_ROOT}/packages/luajit_x64-windows/include/luajit")
+    set(LUAJIT_LIB "$ENV{VCPKG_ROOT}/packages/luajit_x64-windows/lib/lua51.lib")
+else()
+    set(LUAJIT_INCLUDE_DIR "$ENV{VCPKG_ROOT}/packages/luajit_x64-linux/include/luajit")
+    set(LUAJIT_LIB "$ENV{VCPKG_ROOT}/packages/luajit_x64-linux/lib/lua51.a")
 endif()
 
 # Engine_Core
