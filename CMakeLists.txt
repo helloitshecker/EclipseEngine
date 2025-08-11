@@ -12,7 +12,14 @@ if (WIN32)
     find_package(SDL3 CONFIG REQUIRED)
 else()
     # Use system-installed SDL3 on Linux
-    find_package(SDL3 REQUIRED CONFIG)
+    find_package(SDL3 CONFIG)
+    if (NOT SDL3_FOUND)
+        find_package(PkgConfig REQUIRED)
+        pkg_check_modules(SDL3 REQUIRED sdl3)
+        add_library(SDL3::SDL3 INTERFACE IMPORTED)
+        target_include_directories(SDL3::SDL3 INTERFACE ${SDL3_INCLUDE_DIRS})
+        target_link_libraries(SDL3::SDL3 INTERFACE ${SDL3_LIBRARIES})
+    endif()
 endif()
 
 # LuaJIT
