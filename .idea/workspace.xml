@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="BackendCodeEditorMiscSettings">
+    <option name="/Default/Environment/Hierarchy/GeneratedFilesCacheKey/Timestamp/@EntryValue" value="4" type="long" />
+    <option name="/Default/Housekeeping/FeatureSuggestion/FeatureSuggestionManager/DisabledSuggesters/=SwitchToGoToActionSuggester/@EntryIndexedValue" value="true" type="bool" />
+  </component>
+  <component name="CMakePresetLoader"><![CDATA[{
+  "useNewFormat": true
+}]]></component>
+  <component name="CMakeReloadState">
+    <option name="reloaded" value="true" />
+  </component>
+  <component name="CMakeRunConfigurationManager">
+    <generated>
+      <config projectName="EclipseEngine" targetName="SDL3-static" />
+      <config projectName="EclipseEngine" targetName="SDL3_test" />
+      <config projectName="EclipseEngine" targetName="SDL_uclibc" />
+      <config projectName="EclipseEngine" targetName="Runtime" />
+      <config projectName="EclipseEngine" targetName="Core" />
+    </generated>
+  </component>
+  <component name="CMakeSettings">
+    <configurations>
+      <configuration PROFILE_NAME="Debug-Clang" ENABLED="true" CONFIG_NAME="Debug" TOOLCHAIN_NAME="Clang" GENERATION_OPTIONS="-G Ninja" />
+      <configuration PROFILE_NAME="Release-Clang" ENABLED="true" CONFIG_NAME="Release" TOOLCHAIN_NAME="Clang" GENERATION_OPTIONS="-G Ninja" />
+    </configurations>
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="c4cc6b7a-9f23-44e1-b2e9-aa78f90d5f24" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/.gitmodules" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Engine/Core/Error.hpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Engine/Core/EventManager.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Engine/Core/EventManager.hpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Engine/Core/Types.hpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Engine/Core/Window.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Engine/Core/Window.hpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Engine/Runtime/Runtime.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Engine/ThirdParty/SDL" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/codeStyles/codeStyleConfig.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dictionaries/project.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/CMakeLists.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DoxyFile" beforeDir="false" afterPath="$PROJECT_DIR$/DoxyFile" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Engine/Core/Debug.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Engine/Core/Events.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Engine/Core/FileSystem.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Engine/Core/FileSystem.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Engine/Core/Memory.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Engine/Core/Memory.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Engine/Core/Time.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Engine/Core/Time.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Engine/Core/Types.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Engine/Renderer/GL/CMakeLists.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Engine/Renderer/GL/Driver/RenderDevice.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Engine/Renderer/GL/Driver/RenderDevice.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Engine/Renderer/GL/glad/glad.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Engine/Renderer/GL/glad/include/KHR/khrplatform.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Engine/Renderer/GL/glad/include/glad/glad.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Engine/Renderer/Renderer.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Engine/Renderer/Renderer.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Engine/Runtime/Runtime.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Engine/Scripting/Scripting.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Engine/Scripting/Scripting.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Engine/Scripts/Engine/Engine.lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Engine/Scripts/Engine/Renderer.lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Engine/Scripts/Engine/Window.lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Engine/Scripts/main.lua" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Engine/System/Window.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Engine/System/Window.h" beforeDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ClangdSettings">
+    <option name="formatViaClangd" value="false" />
+  </component>
+  <component name="ExecutionTargetManager" SELECTED_TARGET="CMakeBuildProfile:Debug-Clang" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "CMake Application.Runtime.executor": "Run",
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.RadMigrateCodeStyle": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager": "true",
+    "RunOnceActivity.cidr.known.project.marker": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.readMode.enableVisualFormatting": "true",
+    "RunOnceActivity.west.config.association.type.startup.service": "true",
+    "cf.first.check.clang-format": "false",
+    "cidr.known.project.marker": "true",
+    "git-widget-placeholder": "main",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "CMakeSettings",
+    "vue.rearranger.settings.migration": "true"
+  }
+}]]></component>
+  <component name="RunManager" selected="CMake Application.Runtime">
+    <configuration default="true" type="CLionExternalRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true">
+      <method v="2">
+        <option name="CLION.EXTERNAL.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Core" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="EclipseEngine" TARGET_NAME="Core" CONFIG_NAME="Debug-Clang">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Runtime" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="EclipseEngine" TARGET_NAME="Runtime" CONFIG_NAME="Debug-Clang" RUN_TARGET_PROJECT_NAME="EclipseEngine" RUN_TARGET_NAME="Runtime">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="SDL3-static" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="EclipseEngine" TARGET_NAME="SDL3-static" CONFIG_NAME="Debug-Clang">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="SDL3_test" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="EclipseEngine" TARGET_NAME="SDL3_test" CONFIG_NAME="Debug-Clang">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="SDL_uclibc" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="EclipseEngine" TARGET_NAME="SDL_uclibc" CONFIG_NAME="Debug-Clang">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <list>
+      <item itemvalue="CMake Application.Core" />
+      <item itemvalue="CMake Application.Runtime" />
+      <item itemvalue="CMake Application.SDL3-static" />
+      <item itemvalue="CMake Application.SDL3_test" />
+      <item itemvalue="CMake Application.SDL_uclibc" />
+    </list>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="c4cc6b7a-9f23-44e1-b2e9-aa78f90d5f24" name="Changes" comment="" />
+      <created>1755155869982</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1755155869982</updated>
+      <workItem from="1755155872768" duration="7941000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="VCPKGProject">
+    <isAutomaticCheckingOnLaunch value="false" />
+    <isAutomaticFoundErrors value="true" />
+    <isAutomaticReloadCMake value="true" />
+  </component>
+</project>

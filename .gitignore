@@ -13,4 +13,5 @@ CMakeUserPresets.json
 cmake-build-*
 build*
 Docs
+docs
 nigga.txt
