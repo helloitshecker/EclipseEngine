@@ -2,6 +2,8 @@
 #include <Engine/Core/EventManager.hpp>
 #include <Engine/Core/Error.hpp>
 
+#include "Engine/Graphics/RenderDevice.hpp"
+
 bool quit = false;
 
 void HandleEvents(Eclipse::EventManager& event_manager) {
@@ -29,11 +31,11 @@ void HandleEvents(Eclipse::EventManager& event_manager) {
                                 break;
 
                         case Eclipse::EventManager::EventType::MOUSE_MOVE:
-                                EINFO("Mouse Moved to ({}, {}), Rel: ({}, {})",
-                                      ev.data.mouse_position.pos[0],
-                                      ev.data.mouse_position.pos[1],
-                                      ev.data.mouse_position.rel_pos[0],
-                                      ev.data.mouse_position.rel_pos[1]);
+                                // EINFO("Mouse Moved to ({}, {}), Rel: ({}, {})",
+                                //       ev.data.mouse_position.pos[0],
+                                //       ev.data.mouse_position.pos[1],
+                                //       ev.data.mouse_position.rel_pos[0],
+                                //       ev.data.mouse_position.rel_pos[1]);
                                 break;
 
                         case Eclipse::EventManager::EventType::MOUSE_WHEEL:
@@ -59,12 +61,17 @@ void HandleEvents(Eclipse::EventManager& event_manager) {
         }
 }
 
-
 int main(int argc, char* argv[]) {
         Eclipse::EventManager event_manager;
 
-        const Eclipse::Window::CreateInfo windowCreateInfo{};
+        const Eclipse::Window::CreateInfo windowCreateInfo{.width = 800, .height = 600, .flags = Eclipse::Window::Flags::WINDOWED};
         Eclipse::Window window {windowCreateInfo};
+
+        const std::vector<const char*> vk_extensions = window.GetVulkanCreationData();
+        const Eclipse::RenderDevice::CreateInfo renderDeviceCreateInfo {
+                .extensions = vk_extensions,
+        };
+        Eclipse::RenderDevice render_device {renderDeviceCreateInfo};
 
         while (!quit) {
                 window.SubmitEvents(event_manager);

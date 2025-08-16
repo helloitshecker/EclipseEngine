@@ -3,6 +3,8 @@
 #include <SDL3/SDL.h>
 #include <Engine/Core/Error.hpp>
 
+#include "SDL3/SDL_vulkan.h"
+
 namespace Eclipse {
 
         u64 Window::get_monitor_pixels() {
@@ -28,7 +30,6 @@ namespace Eclipse {
                         width = static_cast<i32>(GetUpper32(wh));
                         height = static_cast<i32>(GetLower32(wh));
                 }
-
 
                 // Setting Flags according to the window
                 SDL_WindowFlags flags = SDL_WINDOW_VULKAN;
@@ -134,5 +135,20 @@ namespace Eclipse {
                         }
                 }
         }
+
+        const std::vector<const char*> Window::GetVulkanCreationData() {
+                u32 count{};
+                auto pExtensions = SDL_Vulkan_GetInstanceExtensions(&count);
+                if (!pExtensions) {
+                        EERROR("Failed to get Vulkan extensions from SDL_Vulkan_GetInstanceExtensions");
+                        return {};
+                }
+
+                SDL_Vulkan_GetInstanceExtensions(&count);
+                const std::vector<const char*> extensions(pExtensions, pExtensions + count);
+
+                return extensions;
+        }
+
 
 }

@@ -1,3 +1,6 @@
 [submodule "Engine/ThirdParty/SDL"]
 	path = Engine/ThirdParty/SDL
 	url = https://github.com/libsdl-org/SDL
+[submodule "Engine/ThirdParty/volk"]
+	path = Engine/ThirdParty/volk
+	url = https://github.com/zeux/volk

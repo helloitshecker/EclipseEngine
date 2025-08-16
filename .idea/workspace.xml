@@ -7,14 +7,19 @@
     <option name="/Default/Environment/Hierarchy/GeneratedFilesCacheKey/Timestamp/@EntryValue" value="4" type="long" />
     <option name="/Default/Housekeeping/FeatureSuggestion/FeatureSuggestionManager/DisabledSuggesters/=SwitchToGoToActionSuggester/@EntryIndexedValue" value="true" type="bool" />
   </component>
-  <component name="CMakePresetLoader"><![CDATA[{
-  "useNewFormat": true
-}]]></component>
+  <component name="CMakePresetLoader">{
+  &quot;useNewFormat&quot;: true
+}</component>
+  <component name="CMakeProjectFlavorService">
+    <option name="flavorId" value="CMakePlainProjectFlavor" />
+  </component>
   <component name="CMakeReloadState">
     <option name="reloaded" value="true" />
   </component>
   <component name="CMakeRunConfigurationManager">
     <generated>
+      <config projectName="EclipseEngine" targetName="volk" />
+      <config projectName="EclipseEngine" targetName="Graphics" />
       <config projectName="EclipseEngine" targetName="SDL3-static" />
       <config projectName="EclipseEngine" targetName="SDL3_test" />
       <config projectName="EclipseEngine" targetName="SDL_uclibc" />
@@ -30,48 +35,16 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c4cc6b7a-9f23-44e1-b2e9-aa78f90d5f24" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.gitmodules" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Engine/Core/Error.hpp" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Engine/Core/EventManager.cpp" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Engine/Core/EventManager.hpp" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Engine/Core/Types.hpp" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Engine/Core/Window.cpp" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Engine/Core/Window.hpp" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Engine/Runtime/Runtime.cpp" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Engine/ThirdParty/SDL" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/codeStyles/codeStyleConfig.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dictionaries/project.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Engine/Graphics/RenderDevice.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Engine/Graphics/RenderDevice.hpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Engine/ThirdParty/volk" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitmodules" beforeDir="false" afterPath="$PROJECT_DIR$/.gitmodules" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/CMakeLists.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/DoxyFile" beforeDir="false" afterPath="$PROJECT_DIR$/DoxyFile" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Engine/Core/Debug.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Engine/Core/Events.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Engine/Core/FileSystem.c" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Engine/Core/FileSystem.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Engine/Core/Memory.c" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Engine/Core/Memory.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Engine/Core/Time.c" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Engine/Core/Time.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Engine/Core/Types.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Engine/Renderer/GL/CMakeLists.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Engine/Renderer/GL/Driver/RenderDevice.c" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Engine/Renderer/GL/Driver/RenderDevice.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Engine/Renderer/GL/glad/glad.c" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Engine/Renderer/GL/glad/include/KHR/khrplatform.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Engine/Renderer/GL/glad/include/glad/glad.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Engine/Renderer/Renderer.c" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Engine/Renderer/Renderer.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Engine/Runtime/Runtime.c" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Engine/Scripting/Scripting.c" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Engine/Scripting/Scripting.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Engine/Scripts/Engine/Engine.lua" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Engine/Scripts/Engine/Renderer.lua" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Engine/Scripts/Engine/Window.lua" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Engine/Scripts/main.lua" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Engine/System/Window.c" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Engine/System/Window.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Engine/Core/Window.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/Core/Window.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Engine/Core/Window.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/Core/Window.hpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Engine/Runtime/Runtime.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/Runtime/Runtime.cpp" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -82,6 +55,14 @@
     <option name="formatViaClangd" value="false" />
   </component>
   <component name="ExecutionTargetManager" SELECTED_TARGET="CMakeBuildProfile:Debug-Clang" />
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;customColor&quot;: &quot;&quot;,
+  &quot;associatedIndex&quot;: 3
+}</component>
+  <component name="ProjectId" id="31Hiok4LBX1MRxydvbZVOujGij7" />
   <component name="ProjectLevelVcsManager">
     <ConfirmationsSetting value="2" id="Add" />
   </component>
@@ -123,6 +104,11 @@
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
     </configuration>
+    <configuration name="Graphics" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="EclipseEngine" TARGET_NAME="Graphics" CONFIG_NAME="Debug-Clang">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
     <configuration name="Runtime" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="EclipseEngine" TARGET_NAME="Runtime" CONFIG_NAME="Debug-Clang" RUN_TARGET_PROJECT_NAME="EclipseEngine" RUN_TARGET_NAME="Runtime">
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
@@ -143,12 +129,19 @@
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
     </configuration>
+    <configuration name="volk" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="EclipseEngine" TARGET_NAME="volk" CONFIG_NAME="Debug-Clang">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
     <list>
       <item itemvalue="CMake Application.Core" />
+      <item itemvalue="CMake Application.Graphics" />
       <item itemvalue="CMake Application.Runtime" />
       <item itemvalue="CMake Application.SDL3-static" />
       <item itemvalue="CMake Application.SDL3_test" />
       <item itemvalue="CMake Application.SDL_uclibc" />
+      <item itemvalue="CMake Application.volk" />
     </list>
   </component>
   <component name="TaskManager">
@@ -158,7 +151,9 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1755155869982</updated>
-      <workItem from="1755155872768" duration="7941000" />
+      <workItem from="1755155872768" duration="7995000" />
+      <workItem from="1755187579318" duration="997000" />
+      <workItem from="1755277430475" duration="6389000" />
     </task>
     <servers />
   </component>
