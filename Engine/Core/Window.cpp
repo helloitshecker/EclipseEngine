@@ -39,6 +39,7 @@ namespace Eclipse {
                         case Flags::WINDOWED:                                                   break;
                         case Flags::BORDERLESS_WINDOWED:        flags |= SDL_WINDOW_BORDERLESS; break;
                 }
+                if (info.resizable) flags |= SDL_WINDOW_RESIZABLE;
 
                 // Creates a window here
                 handle = SDL_CreateWindow(info.title.c_str(), width, height, flags);

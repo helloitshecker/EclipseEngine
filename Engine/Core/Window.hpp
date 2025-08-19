@@ -27,7 +27,7 @@ namespace Eclipse {
 
                 void SubmitEvents(EventManager&);
                 const std::vector<const char*> GetVulkanCreationData();
-        private:
+
                 static u64 get_monitor_pixels();
                 void* handle;
         };

@@ -70,7 +70,10 @@ int main(int argc, char* argv[]) {
         const std::vector<const char*> vk_extensions = window.GetVulkanCreationData();
         const Eclipse::RenderDevice::CreateInfo renderDeviceCreateInfo {
                 .extensions = vk_extensions,
+                .debug = true,
+                .window = window
         };
+
         Eclipse::RenderDevice render_device {renderDeviceCreateInfo};
 
         while (!quit) {
