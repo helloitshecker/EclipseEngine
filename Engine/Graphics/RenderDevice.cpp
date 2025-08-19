@@ -166,6 +166,28 @@ VkPhysicalDevice Eclipse::RenderDevice::SelectPhysicalDevice(const std::vector<V
         return bestDevice;
 }
 
+Eclipse::RenderDevice::SwapchainSupportDetails Eclipse::RenderDevice::QuerySwapchainSupport(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface) {
+        SwapchainSupportDetails details{};
+
+        vkGetPhysicalDeviceSurfaceCapabilitiesKHR(physicalDevice, surface, &details.capabilities);
+
+        u32 formatCount = 0;
+        vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice, surface, &formatCount, nullptr);
+        if (formatCount != 0) {
+                details.formats.resize(formatCount);
+                vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice, surface, &formatCount, details.formats.data());
+        }
+
+        u32 presentModeCount = 0;
+        vkGetPhysicalDeviceSurfacePresentModesKHR(physicalDevice, surface, &presentModeCount, nullptr);
+        if (presentModeCount != 0) {
+                details.presentModes.resize(presentModeCount);
+                vkGetPhysicalDeviceSurfacePresentModesKHR(physicalDevice, surface, &presentModeCount, details.presentModes.data());
+        }
+
+        return details;
+}
+
 // INTERNAL VULKAN WRAPPER FUNCTIONS
 
 void Eclipse::RenderDevice::CreateInstance() {
@@ -330,6 +352,124 @@ void Eclipse::RenderDevice::CreateDevice() {
         vkGetDeviceQueue(state.logicalDevice, state.families.present.value(), 0, &state.presentQueue);
 }
 
+void Eclipse::RenderDevice::CreateSwapchain() {
+        SwapchainSupportDetails support = QuerySwapchainSupport(state.physicalDevice, state.surface);
+
+        auto chooseSurfaceFormat = [](const std::vector<VkSurfaceFormatKHR>& formats) {
+                for (const auto& format : formats) {
+                        if (format.format == VK_FORMAT_B8G8R8A8_SRGB &&
+                                format.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR) {
+                                        return format;
+                                }
+                }
+                return formats[0];
+        };
+        auto choosePresentMode = [](const std::vector<VkPresentModeKHR>& modes) {
+                for (const auto& mode : modes) {
+                        if (mode == VK_PRESENT_MODE_MAILBOX_KHR) {
+                                return mode;
+                        }
+                }
+                return VK_PRESENT_MODE_FIFO_KHR;
+        };
+        auto chooseExtent = [&](const VkSurfaceCapabilitiesKHR& caps) {
+                if (caps.currentExtent.width != UINT32_MAX) {
+                        return caps.currentExtent;
+                } else {
+                        VkExtent2D actualExtent{
+                                static_cast<u32>(state.windowWidth),
+                                static_cast<u32>(state.windowHeight)
+                            };
+
+                        actualExtent.width = std::max(caps.minImageExtent.width,
+                                                      std::min(caps.maxImageExtent.width, actualExtent.width));
+                        actualExtent.height = std::max(caps.minImageExtent.height,
+                                                       std::min(caps.maxImageExtent.height, actualExtent.height));
+
+                        return actualExtent;
+                }
+        };
+
+        VkSurfaceFormatKHR surfaceFormat = chooseSurfaceFormat(support.formats);
+        VkPresentModeKHR presentMode = choosePresentMode(support.presentModes);
+        VkExtent2D extent = chooseExtent(support.capabilities);
+
+        u32 imageCount = support.capabilities.minImageCount + 1;
+        if (support.capabilities.maxImageCount > 0 && imageCount > support.capabilities.maxImageCount) {
+                imageCount = support.capabilities.maxImageCount;
+        }
+
+        VkSwapchainCreateInfoKHR createInfo {
+                .sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR,
+                .surface = state.surface,
+                .minImageCount = imageCount,
+                .imageFormat = surfaceFormat.format,
+                .imageColorSpace = surfaceFormat.colorSpace,
+                .imageExtent = extent,
+                .imageArrayLayers = 1,
+                .imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,
+        };
+
+        u32 queueFamilyIndices[] = {
+                state.families.graphics.value(),
+                state.families.present.value(),
+        };
+
+        if (state.families.graphics != state.families.present) {
+                createInfo.imageSharingMode = VK_SHARING_MODE_CONCURRENT;
+                createInfo.queueFamilyIndexCount = 2;
+                createInfo.pQueueFamilyIndices = queueFamilyIndices;
+        } else {
+                createInfo.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;
+        }
+
+        createInfo.preTransform = support.capabilities.currentTransform;
+        createInfo.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
+        createInfo.presentMode = presentMode;
+        createInfo.clipped = VK_TRUE;
+        createInfo.oldSwapchain = VK_NULL_HANDLE;
+
+        if (vkCreateSwapchainKHR(state.logicalDevice, &createInfo, nullptr, &state.swapchain) != VK_SUCCESS) {
+                EERROR("Failed to create Vulkan swapchain!");
+                crash();
+        }
+
+        vkGetSwapchainImagesKHR(state.logicalDevice, state.swapchain, &imageCount, nullptr);
+        state.swapchainImages.resize(imageCount);
+        vkGetSwapchainImagesKHR(state.logicalDevice, state.swapchain, &imageCount, state.swapchainImages.data());
+
+        state.swapchainFormat = surfaceFormat.format;
+        state.swapchainExtent = extent;
+}
+
+void Eclipse::RenderDevice::CreateImageViews() {
+        state.swapchainImageViews.resize(state.swapchainImages.size());
+
+        i32 i = 0;
+        for (auto& image : state.swapchainImages) {
+                VkImageViewCreateInfo createInfo {
+                        .sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
+                        .image = image,
+                        .viewType = VK_IMAGE_VIEW_TYPE_2D,
+                        .format = state.swapchainFormat,
+                        .components.r = VK_COMPONENT_SWIZZLE_IDENTITY,
+                        .components.g = VK_COMPONENT_SWIZZLE_IDENTITY,
+                        .components.b = VK_COMPONENT_SWIZZLE_IDENTITY,
+                        .components.a = VK_COMPONENT_SWIZZLE_IDENTITY,
+                        .subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+                        .subresourceRange.baseMipLevel = 0,
+                        .subresourceRange.levelCount = 1,
+                        .subresourceRange.baseArrayLayer = 0,
+                        .subresourceRange.layerCount = 1,
+                };
+
+                if (vkCreateImageView(state.logicalDevice, &createInfo, nullptr, &state.swapchainImageViews[i++]) != VK_SUCCESS) {
+                        EERROR("Failed to create Vulkan image view!");
+                        crash();
+                }
+        }
+}
+
 // CLIENT SIDE FUNCTIONS
 
 Eclipse::RenderDevice::RenderDevice(const CreateInfo& info) {
@@ -348,6 +488,8 @@ Eclipse::RenderDevice::RenderDevice(const CreateInfo& info) {
                 state.instanceExtensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
         }
 
+        SDL_GetWindowSize(static_cast<SDL_Window*>(info.window.handle), &state.windowWidth, &state.windowHeight);
+
         CreateInstance();
         EINFO("Vulkan Instance Created!");
 
@@ -363,10 +505,22 @@ Eclipse::RenderDevice::RenderDevice(const CreateInfo& info) {
 
         CreateDevice();
         EINFO("Vulkan Device Created!");
+
+        CreateSwapchain();
+        EINFO("Vulkan Swapchain Created!");
+
+        CreateImageViews();
+        EINFO("Vulkan Image View Created!");
 }
 
 Eclipse::RenderDevice::~RenderDevice() {
         if (state.debug) vkDestroyDebugUtilsMessengerEXT(state.instance, state.debugMessenger, nullptr);
+
+        for (auto imageView : state.swapchainImageViews) {
+                vkDestroyImageView(state.logicalDevice, imageView, nullptr);
+        }
+
+        vkDestroySwapchainKHR(state.logicalDevice, state.swapchain, nullptr);
         vkDestroyDevice(state.logicalDevice, nullptr);
         vkDestroySurfaceKHR(state.instance, state.surface, nullptr);
         vkDestroyInstance(state.instance, nullptr);

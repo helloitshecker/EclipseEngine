@@ -33,13 +33,25 @@ namespace Eclipse {
                         }
                 };
 
+                struct SwapchainSupportDetails {
+                        VkSurfaceCapabilitiesKHR capabilities;
+                        std::vector<VkSurfaceFormatKHR> formats;
+                        std::vector<VkPresentModeKHR> presentModes;
+                };
+
                 struct State {
                         bool debug = false;
                         bool dedicated = false;
 
+                        i32 windowWidth;
+                        i32 windowHeight;
+
                         std::vector<const char*> instanceExtensions;
                         std::vector<const char*> instanceLayers;
                         std::vector<const char*> deviceExtensions;
+
+                        std::vector<VkImage> swapchainImages;
+                        std::vector<VkImageView> swapchainImageViews;
 
                         QueueFamilyIndices families;
 
@@ -48,6 +60,9 @@ namespace Eclipse {
                         VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
                         VkDevice logicalDevice = VK_NULL_HANDLE;
                         VkSurfaceKHR surface = VK_NULL_HANDLE;
+                        VkSwapchainKHR swapchain = VK_NULL_HANDLE;
+                        VkFormat swapchainFormat = VK_FORMAT_UNDEFINED;
+                        VkExtent2D swapchainExtent = {};
 
                         VkQueue graphicsQueue;
                         VkQueue computeQueue;
@@ -60,9 +75,12 @@ namespace Eclipse {
                 void CreateInstance();
                 void CreateDebugger();
                 void CreateDevice();
+                void CreateSwapchain();
+                void CreateImageViews();
 
                 static bool CheckInstanceExtensionSupport(const std::vector<const char*>&);
                 static bool CheckInstanceLayerSupport(const std::vector<const char*>&);
-                VkPhysicalDevice SelectPhysicalDevice(const std::vector<VkPhysicalDevice>&) const;
+                [[nodiscard]] VkPhysicalDevice SelectPhysicalDevice(const std::vector<VkPhysicalDevice>&) const;
+                static SwapchainSupportDetails QuerySwapchainSupport(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface);
         };
 }

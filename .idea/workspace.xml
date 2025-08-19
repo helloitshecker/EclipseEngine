@@ -37,7 +37,6 @@
   <component name="ChangeListManager">
     <list default="true" id="c4cc6b7a-9f23-44e1-b2e9-aa78f90d5f24" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/CMakeLists.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Engine/Graphics/RenderDevice.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/Graphics/RenderDevice.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Engine/Graphics/RenderDevice.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/Graphics/RenderDevice.hpp" afterDir="false" />
     </list>
@@ -150,7 +149,7 @@
       <workItem from="1755187579318" duration="997000" />
       <workItem from="1755277430475" duration="9477000" />
       <workItem from="1755579396043" duration="7664000" />
-      <workItem from="1755614398682" duration="3196000" />
+      <workItem from="1755614398682" duration="6182000" />
     </task>
     <servers />
   </component>
