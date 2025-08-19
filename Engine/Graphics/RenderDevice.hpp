@@ -39,6 +39,7 @@ namespace Eclipse {
 
                         std::vector<const char*> instanceExtensions;
                         std::vector<const char*> instanceLayers;
+                        std::vector<const char*> deviceExtensions;
 
                         QueueFamilyIndices families;
 
@@ -47,6 +48,11 @@ namespace Eclipse {
                         VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
                         VkDevice logicalDevice = VK_NULL_HANDLE;
                         VkSurfaceKHR surface = VK_NULL_HANDLE;
+
+                        VkQueue graphicsQueue;
+                        VkQueue computeQueue;
+                        VkQueue presentQueue;
+                        VkQueue transferQueue;
                 };
 
                 State state {};
@@ -57,6 +63,6 @@ namespace Eclipse {
 
                 static bool CheckInstanceExtensionSupport(const std::vector<const char*>&);
                 static bool CheckInstanceLayerSupport(const std::vector<const char*>&);
-                VkPhysicalDevice SelectPhysicalDevice(const std::vector<VkPhysicalDevice>&);
+                VkPhysicalDevice SelectPhysicalDevice(const std::vector<VkPhysicalDevice>&) const;
         };
 }

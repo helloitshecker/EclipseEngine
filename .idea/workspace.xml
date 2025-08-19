@@ -6,6 +6,7 @@
   <component name="BackendCodeEditorMiscSettings">
     <option name="/Default/Environment/Hierarchy/GeneratedFilesCacheKey/Timestamp/@EntryValue" value="4" type="long" />
     <option name="/Default/Housekeeping/FeatureSuggestion/FeatureSuggestionManager/DisabledSuggesters/=SwitchToGoToActionSuggester/@EntryIndexedValue" value="true" type="bool" />
+    <option name="/Default/Housekeeping/LiveTemplatesHousekeeping/HotspotSessionHintIsShown/@EntryValue" value="true" type="bool" />
   </component>
   <component name="CMakePresetLoader">{
   &quot;useNewFormat&quot;: true
@@ -37,11 +38,8 @@
     <list default="true" id="c4cc6b7a-9f23-44e1-b2e9-aa78f90d5f24" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/CMakeLists.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Engine/Core/Window.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/Core/Window.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Engine/Core/Window.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/Core/Window.hpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Engine/Graphics/RenderDevice.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/Graphics/RenderDevice.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Engine/Graphics/RenderDevice.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/Graphics/RenderDevice.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Engine/Runtime/Runtime.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/Runtime/Runtime.cpp" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -91,6 +89,11 @@
   }
 }</component>
   <component name="RunManager" selected="CMake Application.Runtime">
+    <configuration default="true" type="CLionExternalRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true">
+      <method v="2">
+        <option name="CLION.EXTERNAL.BUILD" enabled="true" />
+      </method>
+    </configuration>
     <configuration name="Core" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="EclipseEngine" TARGET_NAME="Core" CONFIG_NAME="Debug-Clang">
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
@@ -121,11 +124,6 @@
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
     </configuration>
-    <configuration default="true" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true">
-      <method v="2">
-        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
-      </method>
-    </configuration>
     <configuration name="volk" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="EclipseEngine" TARGET_NAME="volk" CONFIG_NAME="Debug-Clang">
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
@@ -151,7 +149,8 @@
       <workItem from="1755155872768" duration="7995000" />
       <workItem from="1755187579318" duration="997000" />
       <workItem from="1755277430475" duration="9477000" />
-      <workItem from="1755579396043" duration="6019000" />
+      <workItem from="1755579396043" duration="7664000" />
+      <workItem from="1755614398682" duration="3196000" />
     </task>
     <servers />
   </component>

@@ -26,7 +26,8 @@ add_library(Core STATIC
         Engine/Core/Types.hpp
         Engine/Core/Error.hpp
         Engine/Core/EventManager.cpp
-        Engine/Core/EventManager.hpp)
+        Engine/Core/EventManager.hpp
+)
 
 add_library(Graphics STATIC
         Engine/Graphics/RenderDevice.cpp
