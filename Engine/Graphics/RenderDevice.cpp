@@ -470,6 +470,12 @@ void Eclipse::RenderDevice::CreateImageViews() {
         }
 }
 
+void Eclipse::RenderDevice::CreateGraphicsPipeline() {
+        Eclipse::ShaderManager sm;
+
+        sm.compile_all();
+}
+
 // CLIENT SIDE FUNCTIONS
 
 Eclipse::RenderDevice::RenderDevice(const CreateInfo& info) {
@@ -511,6 +517,9 @@ Eclipse::RenderDevice::RenderDevice(const CreateInfo& info) {
 
         CreateImageViews();
         EINFO("Vulkan Image View Created!");
+
+        CreateGraphicsPipeline();
+        EINFO("Vulkan Graphics Pipeline Created!");
 }
 
 Eclipse::RenderDevice::~RenderDevice() {

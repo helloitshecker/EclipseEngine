@@ -1,0 +1,19 @@
+VertexShaders = [
+
+]
+
+FragmentShaders = [
+
+]
+
+Entry = [
+
+]
+
+HLSLShaderPath = [
+
+]
+
+SPVShaderPath = [
+
+]

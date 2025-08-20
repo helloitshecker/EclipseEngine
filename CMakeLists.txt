@@ -9,6 +9,7 @@ set(BUILD_SHARED_LIBS OFF)
 set(THIRDPARTY_DIR ${CMAKE_SOURCE_DIR}/Engine/ThirdParty)
 
 add_subdirectory(${THIRDPARTY_DIR}/SDL)
+add_subdirectory(${THIRDPARTY_DIR}/toml11)
 
 include_directories(${CMAKE_SOURCE_DIR})
 include_directories(${THIRDPARTY_DIR}/SDL/include)
@@ -31,11 +32,13 @@ add_library(Core STATIC
 
 add_library(Graphics STATIC
         Engine/Graphics/RenderDevice.cpp
-        Engine/Graphics/RenderDevice.hpp)
+        Engine/Graphics/RenderDevice.hpp
+        Engine/Graphics/ShaderManager.cpp
+        Engine/Graphics/ShaderManager.hpp)
 
 add_executable(Runtime
         Engine/Runtime/Runtime.cpp)
 
 target_link_libraries(Core PUBLIC SDL3-static)
-target_link_libraries(Graphics PUBLIC volk)
+target_link_libraries(Graphics PUBLIC volk PUBLIC toml11::toml11)
 target_link_libraries(Runtime PUBLIC Core PUBLIC Graphics)

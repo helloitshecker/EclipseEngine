@@ -4,3 +4,6 @@
 [submodule "Engine/ThirdParty/volk"]
 	path = Engine/ThirdParty/volk
 	url = https://github.com/zeux/volk
+[submodule "Engine/ThirdParty/toml11"]
+	path = Engine/ThirdParty/toml11
+	url = https://github.com/ToruNiina/toml11

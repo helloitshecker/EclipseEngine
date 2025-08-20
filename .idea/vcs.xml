@@ -3,6 +3,7 @@
   <component name="VcsDirectoryMappings">
     <mapping directory="" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/Engine/ThirdParty/SDL" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/Engine/ThirdParty/toml11" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/Engine/ThirdParty/volk" vcs="Git" />
   </component>
 </project>

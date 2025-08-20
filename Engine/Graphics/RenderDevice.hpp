@@ -2,6 +2,7 @@
 
 #include <Engine/Core/Types.hpp>
 #include <Engine/Core/Window.hpp>
+#include <Engine/Graphics/ShaderManager.hpp>
 
 #include <vector>
 #include <optional>
@@ -77,6 +78,7 @@ namespace Eclipse {
                 void CreateDevice();
                 void CreateSwapchain();
                 void CreateImageViews();
+                void CreateGraphicsPipeline();
 
                 static bool CheckInstanceExtensionSupport(const std::vector<const char*>&);
                 static bool CheckInstanceLayerSupport(const std::vector<const char*>&);
