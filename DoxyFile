@@ -1,0 +1,56 @@
+# Doxyfile for EclipseEngine
+# --------------------------
+
+# Project settings
+PROJECT_NAME           = "EclipseEngine"
+PROJECT_NUMBER         = "0.1"
+OUTPUT_DIRECTORY       = Docs
+CREATE_SUBDIRS         = NO
+
+# Input
+INPUT                  = Engine
+FILE_PATTERNS          = *.hpp *.h *.cpp
+RECURSIVE              = YES
+EXCLUDE_PATTERNS       = */ThirdParty/*
+
+# Build settings
+EXTRACT_ALL            = YES
+EXTRACT_PRIVATE        = YES
+EXTRACT_STATIC         = YES
+EXTRACT_LOCAL_METHODS  = YES
+EXTRACT_ANON_NSPACES   = YES
+
+# Language
+OPTIMIZE_OUTPUT_FOR_C  = NO
+OPTIMIZE_OUTPUT_JAVA   = NO
+OPTIMIZE_OUTPUT_VHDL   = NO
+EXTENSION_MAPPING      = hpp=C++
+ENABLE_PREPROCESSING   = YES
+MACRO_EXPANSION        = YES
+EXPAND_ONLY_PREDEF     = NO
+PREDEFINED             = __cplusplus=202302L \
+                          SDL_MAIN_HANDLED \
+                          ECLIPSE_API
+
+# Output format
+GENERATE_HTML          = YES
+HTML_OUTPUT            = html
+GENERATE_LATEX         = NO
+GENERATE_RTF           = NO
+GENERATE_MAN           = NO
+GENERATE_XML           = NO
+
+# Diagrams
+HAVE_DOT               = YES
+DOT_IMAGE_FORMAT       = svg
+CALL_GRAPH             = YES
+CALLER_GRAPH           = YES
+CLASS_DIAGRAMS         = YES
+DOT_TRANSPARENT        = YES
+
+# Warnings
+WARN_IF_UNDOCUMENTED   = YES
+WARN_LOGFILE           = Docs/doxygen_warnings.log
+
+# Misc
+QUIET                  = NO
