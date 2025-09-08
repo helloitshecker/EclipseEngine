@@ -461,19 +461,37 @@ void Eclipse::RenderDevice::CreateImageViews() {
 }
 
 void Eclipse::RenderDevice::CreateGraphicsPipeline() {
-      
-      // // if shader manager not init, then do that -_-
-      // if (!state.shaderManager) state.shaderManager = std::make_unique<ShaderManager>();
-      //
-      // Eclipse::ShaderManager::ShaderProgram sp1{
-      //       .vertexPath = "Shader.vert",
-      //       .fragmentPath = "Shader.frag"
-      // };
-      //
-      // u64 sp1ShaderCode = state.shaderManager->RegisterShader(sp1);
-      // if (sp1ShaderCode == UINT64_MAX) abort();
-      //
-      // state.shaderManager->Update();
+      Eclipse::ShaderManager shaderManager {
+            {
+                  .optimizationLevel = Eclipse::ShaderManager::ShaderOptimizationLevel::PERFORMANCE
+            }
+      };
+
+      if (shaderManager.error) {
+            Eclipse::LogError("Failed to create graphics pipeline!");
+            abort();
+      }
+
+      // Compiling triangle shader
+      auto triangle_shader_vert = shaderManager.compile({
+            .name = Eclipse::FileSystem::ToShaderPath("triangle.vert").value().string(),
+            .entry = "main",
+            .type = Eclipse::ShaderManager::ShaderType::VERTEX
+      });
+
+      auto triangle_shader_frag = shaderManager.compile({
+            .name = Eclipse::FileSystem::ToShaderPath("triangle.frag").value().string(),
+            .entry = "main",
+            .type = Eclipse::ShaderManager::ShaderType::FRAGMENT
+      });
+
+      if (triangle_shader_vert == std::nullopt || triangle_shader_frag == std::nullopt) {
+            Eclipse::LogError("Failed to compile triangle shader!");
+            abort();
+      } else {
+            Eclipse::LogInfo("Successfully compiled triangle shader!");
+      }
+
 }
 
 // CLIENT SIDE FUNCTIONS

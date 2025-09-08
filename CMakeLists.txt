@@ -13,6 +13,7 @@ include_directories($ENV{VULKAN_SDK}/Include)
 
 find_package(SDL3 CONFIG REQUIRED)
 find_package(TBB CONFIG REQUIRED)
+find_package(unofficial-shaderc CONFIG REQUIRED)
 
 add_library(Core
     Engine/Core/Error.hpp
@@ -49,8 +50,9 @@ target_link_libraries(Graphics
         PUBLIC SDL3::SDL3
         PUBLIC ${VOLK_LIB}
         PUBLIC TBB::tbb
-        TBB::tbbmalloc
-        TBB::tbbmalloc_proxy
+        PUBLIC TBB::tbbmalloc
+        PUBLIC TBB::tbbmalloc_proxy
+        PUBLIC unofficial::shaderc::shaderc
 )
 target_link_libraries(Runtime
         PUBLIC Core
