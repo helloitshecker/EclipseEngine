@@ -50,6 +50,7 @@ namespace Eclipse {
             ShaderManager(const ShaderManagerCreateInfo& createInfo);
             std::optional<ShaderObject> compile(const ShaderCreateInfo& shaderInfo);
 
+
       private:
             shaderc::Compiler compiler;
             shaderc::CompileOptions compileOptions;

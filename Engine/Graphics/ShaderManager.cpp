@@ -17,11 +17,55 @@ namespace Eclipse {
       }
 
       std::optional<Eclipse::ShaderManager::ShaderObject> Eclipse::ShaderManager::compile(const ShaderCreateInfo& shaderInfo) {
-            auto shaderFileContent = Eclipse::FileSystem::ReadTextFile(shaderInfo.name);
+            const auto shaderFileContent = Eclipse::FileSystem::ReadTextFile(shaderInfo.name);
             if (shaderFileContent == std::nullopt) {
                   Eclipse::LogError("Failed to read shader file \"{}\"", shaderInfo.name);
                   return std::nullopt;
             }
+
+            // Cache Usage
+            std::string cache_path_str = shaderInfo.name;
+            const size pos = cache_path_str.find("Source");
+
+            // Convert path for da cache path
+            cache_path_str.replace(pos, 6, "Cache");
+            const std::filesystem::path cache_file = cache_path_str;
+
+            do {
+                  // External shader source (always compile)
+                  if (pos == std::string::npos) {
+                        break;
+                  }
+
+                  // Check if cache file exists
+                  if (!std::filesystem::exists(cache_file)) {
+                        Eclipse::LogWarn("Couldn't find cache file for \"{}\"! Skipping to compilation!", shaderInfo.name);
+                        break;
+                  }
+
+                  // Check if cache file is up to date
+                  if (std::filesystem::last_write_time(cache_file) < std::filesystem::last_write_time(shaderInfo.name)) {
+                        Eclipse::LogWarn("Cache file is old for \"{}\"! Skipping to compilation!", shaderInfo.name);
+                        break;
+                  }
+
+                  // Now all set, use it
+                  const auto spirv_file_content = Eclipse::FileSystem::ReadCustomFile<u32>(cache_file);
+                  if (spirv_file_content == std::nullopt) {
+                        Eclipse::LogError("Failed to load Cache file \"{}\" for unknown reasons! Skipping to compilation!", cache_path_str);
+                        break;
+                  }
+                  {
+                        Eclipse::LogInfo("Loading \"{}\" from cache!", shaderInfo.name);
+
+                        ShaderObject obj{};
+                        obj.spirv_code = spirv_file_content.value();
+                        obj.index = shaders.size();
+                        shaders.push_back(obj);
+
+                        return obj;
+                  }
+            } while (0);
 
             shaderc_shader_kind shaderKind{};
             switch (shaderInfo.type) {
@@ -58,6 +102,11 @@ namespace Eclipse {
             obj.index = shaders.size();
 
             shaders.push_back(obj);
+
+            // Write to cache
+            Eclipse::FileSystem::WriteCustomFile<u32>(cache_file, obj.spirv_code);
+
+            Eclipse::LogInfo("Cache file written to \"{}\"!", cache_path_str);
 
             return obj;
       }
