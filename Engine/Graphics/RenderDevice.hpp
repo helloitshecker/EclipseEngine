@@ -64,6 +64,9 @@ namespace Eclipse {
                         VkSwapchainKHR swapchain = VK_NULL_HANDLE;
                         VkFormat swapchainFormat = VK_FORMAT_UNDEFINED;
                         VkExtent2D swapchainExtent = {};
+                        VkRenderPass renderPass = VK_NULL_HANDLE;
+                        VkPipelineLayout pipelineLayout = VK_NULL_HANDLE;
+                        VkPipeline graphicsPipeline = VK_NULL_HANDLE;
 
                         VkQueue graphicsQueue;
                         VkQueue computeQueue;
@@ -80,12 +83,13 @@ namespace Eclipse {
                 void CreateDevice();
                 void CreateSwapchain();
                 void CreateImageViews();
+                void CreateRenderPass();
                 void CreateGraphicsPipeline();
 
                 static bool CheckInstanceExtensionSupport(const std::vector<const char*>&);
                 static bool CheckInstanceLayerSupport(const std::vector<const char*>&);
                 [[nodiscard]] VkPhysicalDevice SelectPhysicalDevice(const std::vector<VkPhysicalDevice>&) const;
                 static SwapchainSupportDetails QuerySwapchainSupport(VkPhysicalDevice, VkSurfaceKHR);
-                std::optional<VkShaderModule> CreateShaderModule(const Eclipse::FileSystem::CustomFileContent<u32>&);
+                std::optional<VkShaderModule> CreateShaderModule(const Eclipse::FileSystem::CustomFileContent<u32>&) const;
         };
 }

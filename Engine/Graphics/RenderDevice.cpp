@@ -185,7 +185,7 @@ Eclipse::RenderDevice::SwapchainSupportDetails Eclipse::RenderDevice::QuerySwapc
       return details;
 }
 
-std::optional<VkShaderModule> Eclipse::RenderDevice::CreateShaderModule(const Eclipse::FileSystem::CustomFileContent<u32>& file) {
+std::optional<VkShaderModule> Eclipse::RenderDevice::CreateShaderModule(const Eclipse::FileSystem::CustomFileContent<u32>& file) const {
       VkShaderModuleCreateInfo createInfo{};
       createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
       createInfo.codeSize = file.size() * sizeof(u32);
@@ -476,6 +476,40 @@ void Eclipse::RenderDevice::CreateImageViews() {
       }
 }
 
+void Eclipse::RenderDevice::CreateRenderPass() {
+      VkAttachmentDescription colorAttachment{};
+      colorAttachment.format = state.swapchainFormat;
+      colorAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
+      colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+      colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
+      colorAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+      colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+      colorAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+      colorAttachment.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+
+      VkAttachmentReference colorAttachmentReference{};
+      colorAttachmentReference.attachment = 0;
+      colorAttachmentReference.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+
+      VkSubpassDescription subpass{};
+      subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
+      subpass.colorAttachmentCount = 1;
+      subpass.pColorAttachments = &colorAttachmentReference;
+
+      VkRenderPassCreateInfo renderPassInfo{};
+      renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
+      renderPassInfo.attachmentCount = 1;
+      renderPassInfo.pAttachments = &colorAttachment;
+      renderPassInfo.subpassCount = 1;
+      renderPassInfo.pSubpasses = &subpass;
+
+      if (vkCreateRenderPass(state.logicalDevice, &renderPassInfo, nullptr, &state.renderPass) != VK_SUCCESS) {
+            Eclipse::LogError("Failed to create render pass!");
+            abort();
+      }
+}
+
+
 void Eclipse::RenderDevice::CreateGraphicsPipeline() {
       Eclipse::ShaderManager shaderManager {{}};
 
@@ -525,6 +559,122 @@ void Eclipse::RenderDevice::CreateGraphicsPipeline() {
 
       std::array<VkPipelineShaderStageCreateInfo, 2> shader_stages = {shader_stage_create_info_v, shader_stage_create_info_f};
 
+      constexpr std::array<VkDynamicState, 2> dynamic_states = {VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR};
+
+      VkPipelineDynamicStateCreateInfo dynamic_state_create_info{};
+      dynamic_state_create_info.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
+      dynamic_state_create_info.dynamicStateCount = static_cast<u32>(dynamic_states.size());
+      dynamic_state_create_info.pDynamicStates = dynamic_states.data();
+
+      VkPipelineVertexInputStateCreateInfo vertex_input_state_create_info{};
+      vertex_input_state_create_info.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
+      vertex_input_state_create_info.vertexBindingDescriptionCount = 0;
+      vertex_input_state_create_info.pVertexBindingDescriptions = nullptr;
+      vertex_input_state_create_info.vertexAttributeDescriptionCount = 0;
+      vertex_input_state_create_info.pVertexAttributeDescriptions = nullptr;
+
+      VkPipelineInputAssemblyStateCreateInfo input_assembly_create_info{};
+      input_assembly_create_info.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
+      input_assembly_create_info.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
+      input_assembly_create_info.primitiveRestartEnable = VK_FALSE;
+
+      VkViewport viewport{};
+      viewport.x = 0.0f;
+      viewport.y = 0.0f;
+      viewport.width = static_cast<float>(state.swapchainExtent.width);
+      viewport.height = static_cast<float>(state.swapchainExtent.height);
+      viewport.minDepth = 0.0f;
+      viewport.maxDepth = 1.0f;
+
+      VkRect2D scissor{};
+      scissor.offset = {0, 0};
+      scissor.extent = state.swapchainExtent;
+
+      VkPipelineViewportStateCreateInfo viewport_state_create_info{};
+      viewport_state_create_info.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
+      viewport_state_create_info.viewportCount = 1;
+      viewport_state_create_info.pViewports = &viewport;
+      viewport_state_create_info.scissorCount = 1;
+      viewport_state_create_info.pScissors = &scissor;
+
+      VkPipelineRasterizationStateCreateInfo rasterization_state_create_info{};
+      rasterization_state_create_info.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
+      rasterization_state_create_info.depthClampEnable = VK_FALSE;
+      rasterization_state_create_info.rasterizerDiscardEnable = VK_FALSE;
+      rasterization_state_create_info.polygonMode = VK_POLYGON_MODE_FILL;
+      rasterization_state_create_info.cullMode = VK_CULL_MODE_BACK_BIT;
+      rasterization_state_create_info.frontFace = VK_FRONT_FACE_CLOCKWISE;
+      rasterization_state_create_info.lineWidth = 1.0f;
+      rasterization_state_create_info.depthBiasEnable = VK_FALSE;
+      rasterization_state_create_info.depthBiasClamp = 0.0f;
+      rasterization_state_create_info.depthBiasConstantFactor = 0.0f;
+      rasterization_state_create_info.depthBiasSlopeFactor = 0.0f;
+
+      VkPipelineMultisampleStateCreateInfo multisample_state_create_info{};
+      multisample_state_create_info.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
+      multisample_state_create_info.sampleShadingEnable = VK_FALSE;
+      multisample_state_create_info.rasterizationSamples = VK_SAMPLE_COUNT_1_BIT;
+      multisample_state_create_info.minSampleShading = 1.0f;
+      multisample_state_create_info.pSampleMask = nullptr;
+      multisample_state_create_info.alphaToCoverageEnable = VK_FALSE;
+      multisample_state_create_info.alphaToOneEnable = VK_FALSE;
+
+      VkPipelineColorBlendAttachmentState color_blend_attachment{};
+      color_blend_attachment.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
+      color_blend_attachment.blendEnable = VK_TRUE;
+      color_blend_attachment.srcColorBlendFactor = VK_BLEND_FACTOR_SRC_ALPHA;
+      color_blend_attachment.dstColorBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
+      color_blend_attachment.colorBlendOp = VK_BLEND_OP_ADD;
+      color_blend_attachment.srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE;
+      color_blend_attachment.dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO;
+      color_blend_attachment.colorBlendOp = VK_BLEND_OP_ADD;
+
+      VkPipelineColorBlendStateCreateInfo color_blend_state_create_info{};
+      color_blend_state_create_info.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
+      color_blend_state_create_info.logicOpEnable = VK_FALSE;
+      color_blend_state_create_info.logicOp = VK_LOGIC_OP_COPY;
+      color_blend_state_create_info.attachmentCount = 1;
+      color_blend_state_create_info.pAttachments = &color_blend_attachment;
+      color_blend_state_create_info.blendConstants[0] = 0.0f;
+      color_blend_state_create_info.blendConstants[1] = 0.0f;
+      color_blend_state_create_info.blendConstants[2] = 0.0f;
+      color_blend_state_create_info.blendConstants[3] = 0.0f;
+
+      VkPipelineLayoutCreateInfo pipelineLayout_create_info{};
+      pipelineLayout_create_info.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
+      pipelineLayout_create_info.setLayoutCount = 0;
+      pipelineLayout_create_info.pSetLayouts = nullptr;
+      pipelineLayout_create_info.pushConstantRangeCount = 0;
+      pipelineLayout_create_info.pPushConstantRanges = nullptr;
+
+      if (vkCreatePipelineLayout(state.logicalDevice, &pipelineLayout_create_info, nullptr, &state.pipelineLayout) != VK_SUCCESS) {
+            Eclipse::LogError("Failed to create vulkan pipeline layout!");
+            abort();
+      }
+
+      VkGraphicsPipelineCreateInfo pipeline_create_info{};
+      pipeline_create_info.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
+      pipeline_create_info.stageCount = static_cast<u32>(shader_stages.size());
+      pipeline_create_info.pStages = shader_stages.data();
+      pipeline_create_info.pVertexInputState = &vertex_input_state_create_info;
+      pipeline_create_info.pInputAssemblyState = &input_assembly_create_info;
+      pipeline_create_info.pViewportState = &viewport_state_create_info;
+      pipeline_create_info.pRasterizationState = &rasterization_state_create_info;
+      pipeline_create_info.pMultisampleState = &multisample_state_create_info;
+      pipeline_create_info.pDepthStencilState = nullptr;
+      pipeline_create_info.pColorBlendState = &color_blend_state_create_info;
+      pipeline_create_info.pDynamicState = &dynamic_state_create_info;
+      pipeline_create_info.layout = state.pipelineLayout;
+      pipeline_create_info.renderPass = state.renderPass;
+      pipeline_create_info.subpass = 0;
+      pipeline_create_info.basePipelineHandle = VK_NULL_HANDLE;
+      pipeline_create_info.basePipelineIndex = -1;
+
+      if (vkCreateGraphicsPipelines(state.logicalDevice, VK_NULL_HANDLE, 1, &pipeline_create_info, nullptr, &state.graphicsPipeline) != VK_SUCCESS) {
+            Eclipse::LogError("Failed to create graphics pipeline!");
+            abort();
+      }
+
       vkDestroyShaderModule(state.logicalDevice, frag_shader_module.value(), nullptr);
       vkDestroyShaderModule(state.logicalDevice, vert_shader_module.value(), nullptr);
 }
@@ -570,6 +720,9 @@ Eclipse::RenderDevice::RenderDevice(const CreateInfo& info) {
       CreateImageViews();
       Eclipse::LogInfo("Vulkan Image View Created!");
 
+      CreateRenderPass();
+      Eclipse::LogInfo("Vulkan Render Pass Created!");
+
       CreateGraphicsPipeline();
       Eclipse::LogInfo("Vulkan Graphics Pipeline Created!");
 }
@@ -577,10 +730,13 @@ Eclipse::RenderDevice::RenderDevice(const CreateInfo& info) {
 Eclipse::RenderDevice::~RenderDevice() {
       if (state.debug) vkDestroyDebugUtilsMessengerEXT(state.instance, state.debugMessenger, nullptr);
 
-      for (auto imageView : state.swapchainImageViews) {
+      for (const auto& imageView : state.swapchainImageViews) {
             vkDestroyImageView(state.logicalDevice, imageView, nullptr);
       }
 
+      vkDestroyPipeline(state.logicalDevice, state.graphicsPipeline, nullptr);
+      vkDestroyPipelineLayout(state.logicalDevice, state.pipelineLayout, nullptr);
+      vkDestroyRenderPass(state.logicalDevice, state.renderPass, nullptr);
       vkDestroySwapchainKHR(state.logicalDevice, state.swapchain, nullptr);
       vkDestroyDevice(state.logicalDevice, nullptr);
       vkDestroySurfaceKHR(state.instance, state.surface, nullptr);
