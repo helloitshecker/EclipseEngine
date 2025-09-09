@@ -6,6 +6,7 @@
 #include <SDL3/SDL_vulkan.h>
 
 #include <set>
+#include <array>
 
 // GLOBALS
 
@@ -183,6 +184,21 @@ Eclipse::RenderDevice::SwapchainSupportDetails Eclipse::RenderDevice::QuerySwapc
 
       return details;
 }
+
+std::optional<VkShaderModule> Eclipse::RenderDevice::CreateShaderModule(const Eclipse::FileSystem::CustomFileContent<u32>& file) {
+      VkShaderModuleCreateInfo createInfo{};
+      createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
+      createInfo.codeSize = file.size() * sizeof(u32);
+      createInfo.pCode = file.data();
+
+      VkShaderModule module;
+      if (vkCreateShaderModule(state.logicalDevice, &createInfo, nullptr, &module) != VK_SUCCESS) {
+            return std::nullopt;
+      }
+
+      return module;
+}
+
 
 // INTERNAL VULKAN WRAPPER FUNCTIONS
 
@@ -461,11 +477,7 @@ void Eclipse::RenderDevice::CreateImageViews() {
 }
 
 void Eclipse::RenderDevice::CreateGraphicsPipeline() {
-      Eclipse::ShaderManager shaderManager {
-            {
-                  .optimizationLevel = Eclipse::ShaderManager::ShaderOptimizationLevel::PERFORMANCE
-            }
-      };
+      Eclipse::ShaderManager shaderManager {{}};
 
       if (shaderManager.error) {
             Eclipse::LogError("Failed to create graphics pipeline!");
@@ -473,13 +485,13 @@ void Eclipse::RenderDevice::CreateGraphicsPipeline() {
       }
 
       // Compiling triangle shader
-      auto triangle_shader_vert = shaderManager.compile({
+      const auto triangle_shader_vert = shaderManager.compile({
             .name = Eclipse::FileSystem::ToShaderPath("triangle.vert").value().string(),
             .entry = "main",
             .type = Eclipse::ShaderManager::ShaderType::VERTEX
       });
 
-      auto triangle_shader_frag = shaderManager.compile({
+      const auto triangle_shader_frag = shaderManager.compile({
             .name = Eclipse::FileSystem::ToShaderPath("triangle.frag").value().string(),
             .entry = "main",
             .type = Eclipse::ShaderManager::ShaderType::FRAGMENT
@@ -492,6 +504,29 @@ void Eclipse::RenderDevice::CreateGraphicsPipeline() {
             Eclipse::LogInfo("Successfully compiled triangle shader!");
       }
 
+      auto vert_shader_module = CreateShaderModule(triangle_shader_vert.value().spirv_code);
+      auto frag_shader_module = CreateShaderModule(triangle_shader_frag.value().spirv_code);
+
+      if (vert_shader_module == std::nullopt || frag_shader_module == std::nullopt) {
+            Eclipse::LogError("Failed to attach triangle shader to vulkan :(!");
+      }
+
+      VkPipelineShaderStageCreateInfo shader_stage_create_info_v{};
+      shader_stage_create_info_v.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+      shader_stage_create_info_v.stage = VK_SHADER_STAGE_VERTEX_BIT;
+      shader_stage_create_info_v.module = vert_shader_module.value();
+      shader_stage_create_info_v.pName = "main";
+
+      VkPipelineShaderStageCreateInfo shader_stage_create_info_f{};
+      shader_stage_create_info_f.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+      shader_stage_create_info_f.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
+      shader_stage_create_info_f.module = frag_shader_module.value();
+      shader_stage_create_info_f.pName = "main";
+
+      std::array<VkPipelineShaderStageCreateInfo, 2> shader_stages = {shader_stage_create_info_v, shader_stage_create_info_f};
+
+      vkDestroyShaderModule(state.logicalDevice, frag_shader_module.value(), nullptr);
+      vkDestroyShaderModule(state.logicalDevice, vert_shader_module.value(), nullptr);
 }
 
 // CLIENT SIDE FUNCTIONS
