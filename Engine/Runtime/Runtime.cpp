@@ -91,5 +91,7 @@ int main(int argc, char* argv[]) {
       while (!quit) {
             win.SubmitEvents(event_manager);
             HandleEvents(event_manager);
+
+            render_device.DrawFrame();
       }
 }

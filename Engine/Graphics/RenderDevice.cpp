@@ -339,8 +339,18 @@ void Eclipse::RenderDevice::CreateDevice() {
 
       VkPhysicalDeviceFeatures deviceFeatures{};
 
+      VkPhysicalDeviceDynamicRenderingFeatures dynamicRenderingFeatures{};
+      dynamicRenderingFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DYNAMIC_RENDERING_FEATURES;
+      dynamicRenderingFeatures.dynamicRendering = VK_TRUE;
+
+      VkPhysicalDeviceSynchronization2Features synchronization2Features{};
+      synchronization2Features.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SYNCHRONIZATION_2_FEATURES;
+      synchronization2Features.synchronization2 = VK_TRUE;
+      synchronization2Features.pNext = &dynamicRenderingFeatures;
+
       VkDeviceCreateInfo deviceCreateInfo{};
       deviceCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
+      deviceCreateInfo.pNext = &synchronization2Features;
       deviceCreateInfo.queueCreateInfoCount = static_cast<u32>(queueCreateInfos.size());
       deviceCreateInfo.pQueueCreateInfos = queueCreateInfos.data();
       deviceCreateInfo.pEnabledFeatures = &deviceFeatures;
@@ -453,7 +463,7 @@ void Eclipse::RenderDevice::CreateImageViews() {
       state.swapchainImageViews.resize(state.swapchainImages.size());
 
       i32 i = 0;
-      for (auto& image : state.swapchainImages) {
+      for (const auto& image : state.swapchainImages) {
             VkImageViewCreateInfo createInfo{};
             createInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
             createInfo.image = image;
@@ -476,56 +486,22 @@ void Eclipse::RenderDevice::CreateImageViews() {
       }
 }
 
-void Eclipse::RenderDevice::CreateRenderPass() {
-      VkAttachmentDescription colorAttachment{};
-      colorAttachment.format = state.swapchainFormat;
-      colorAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
-      colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-      colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
-      colorAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-      colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-      colorAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-      colorAttachment.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
-
-      VkAttachmentReference colorAttachmentReference{};
-      colorAttachmentReference.attachment = 0;
-      colorAttachmentReference.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-
-      VkSubpassDescription subpass{};
-      subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
-      subpass.colorAttachmentCount = 1;
-      subpass.pColorAttachments = &colorAttachmentReference;
-
-      VkRenderPassCreateInfo renderPassInfo{};
-      renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
-      renderPassInfo.attachmentCount = 1;
-      renderPassInfo.pAttachments = &colorAttachment;
-      renderPassInfo.subpassCount = 1;
-      renderPassInfo.pSubpasses = &subpass;
-
-      if (vkCreateRenderPass(state.logicalDevice, &renderPassInfo, nullptr, &state.renderPass) != VK_SUCCESS) {
-            Eclipse::LogError("Failed to create render pass!");
-            abort();
-      }
-}
-
-
 void Eclipse::RenderDevice::CreateGraphicsPipeline() {
-      Eclipse::ShaderManager shaderManager {{}};
+      state.shaderManager = std::make_unique<ShaderManager>(Eclipse::ShaderManager::ShaderManagerCreateInfo{});
 
-      if (shaderManager.error) {
+      if (state.shaderManager->error) {
             Eclipse::LogError("Failed to create graphics pipeline!");
             abort();
       }
 
       // Compiling triangle shader
-      const auto triangle_shader_vert = shaderManager.compile({
+      const auto triangle_shader_vert = state.shaderManager->compile({
             .name = Eclipse::FileSystem::ToShaderPath("triangle.vert").value().string(),
             .entry = "main",
             .type = Eclipse::ShaderManager::ShaderType::VERTEX
       });
 
-      const auto triangle_shader_frag = shaderManager.compile({
+      const auto triangle_shader_frag = state.shaderManager->compile({
             .name = Eclipse::FileSystem::ToShaderPath("triangle.frag").value().string(),
             .entry = "main",
             .type = Eclipse::ShaderManager::ShaderType::FRAGMENT
@@ -652,6 +628,11 @@ void Eclipse::RenderDevice::CreateGraphicsPipeline() {
             abort();
       }
 
+      VkPipelineRenderingCreateInfo pipeline_rendering_create_info{};
+      pipeline_rendering_create_info.sType = VK_STRUCTURE_TYPE_PIPELINE_RENDERING_CREATE_INFO;
+      pipeline_rendering_create_info.colorAttachmentCount = 1;
+      pipeline_rendering_create_info.pColorAttachmentFormats = &state.swapchainFormat;
+
       VkGraphicsPipelineCreateInfo pipeline_create_info{};
       pipeline_create_info.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
       pipeline_create_info.stageCount = static_cast<u32>(shader_stages.size());
@@ -665,10 +646,11 @@ void Eclipse::RenderDevice::CreateGraphicsPipeline() {
       pipeline_create_info.pColorBlendState = &color_blend_state_create_info;
       pipeline_create_info.pDynamicState = &dynamic_state_create_info;
       pipeline_create_info.layout = state.pipelineLayout;
-      pipeline_create_info.renderPass = state.renderPass;
+      pipeline_create_info.renderPass = VK_NULL_HANDLE;
       pipeline_create_info.subpass = 0;
       pipeline_create_info.basePipelineHandle = VK_NULL_HANDLE;
       pipeline_create_info.basePipelineIndex = -1;
+      pipeline_create_info.pNext = &pipeline_rendering_create_info;
 
       if (vkCreateGraphicsPipelines(state.logicalDevice, VK_NULL_HANDLE, 1, &pipeline_create_info, nullptr, &state.graphicsPipeline) != VK_SUCCESS) {
             Eclipse::LogError("Failed to create graphics pipeline!");
@@ -677,6 +659,122 @@ void Eclipse::RenderDevice::CreateGraphicsPipeline() {
 
       vkDestroyShaderModule(state.logicalDevice, frag_shader_module.value(), nullptr);
       vkDestroyShaderModule(state.logicalDevice, vert_shader_module.value(), nullptr);
+}
+
+void Eclipse::RenderDevice::CreateCommandPool() {
+      VkCommandPoolCreateInfo command_pool_create_info{};
+      command_pool_create_info.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
+      command_pool_create_info.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
+      command_pool_create_info.queueFamilyIndex = state.families.graphics.value();
+
+      if (vkCreateCommandPool(state.logicalDevice, &command_pool_create_info, nullptr, &state.commandPool) != VK_SUCCESS) {
+            Eclipse::LogError("Failed to create command pool!");
+            abort();
+      }
+}
+
+void Eclipse::RenderDevice::CreateCommandBuffers() {
+      state.commandBuffers.resize(state.swapchainImageViews.size());
+
+      VkCommandBufferAllocateInfo command_buffer_allocate_info{};
+      command_buffer_allocate_info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+      command_buffer_allocate_info.commandPool = state.commandPool;
+      command_buffer_allocate_info.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+      command_buffer_allocate_info.commandBufferCount = static_cast<u32>(state.commandBuffers.size());
+
+      if (vkAllocateCommandBuffers(state.logicalDevice, &command_buffer_allocate_info, state.commandBuffers.data()) != VK_SUCCESS) {
+            Eclipse::LogError("Failed to create command buffers!");
+            abort();
+      }
+}
+
+
+
+void Eclipse::RenderDevice::RecordCommandBuffer(const VkCommandBuffer command_buffer, const u32 image_index) const {
+      constexpr VkCommandBufferBeginInfo begin_info {
+            .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
+            .flags = 0,
+            .pInheritanceInfo = nullptr,
+      };
+
+      if (vkBeginCommandBuffer(command_buffer, &begin_info) != VK_SUCCESS) {
+            Eclipse::LogError("Failed to begin command buffer!");
+            abort();
+      }
+
+      const VkRenderingAttachmentInfo color_attachment_info{
+            .sType = VK_STRUCTURE_TYPE_RENDERING_ATTACHMENT_INFO,
+            .imageView = state.swapchainImageViews[image_index],
+            .imageLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+            .loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR,
+            .storeOp = VK_ATTACHMENT_STORE_OP_STORE,
+            .clearValue = {.color = {0.0f, 0.0f, 0.0f, 1.0f}, },
+      };
+
+      const VkRenderingInfo rendering_info{
+            .sType = VK_STRUCTURE_TYPE_RENDERING_INFO,
+            .renderArea = {{0, 0}, state.swapchainExtent},
+            .layerCount = 1,
+            .colorAttachmentCount = 1,
+            .pColorAttachments = &color_attachment_info,
+      };
+
+      vkCmdBeginRendering(command_buffer, &rendering_info);
+
+      vkCmdBindPipeline(command_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, state.graphicsPipeline);
+
+      const VkViewport viewport {
+            .x = 0.0f,
+            .y = 0.0f,
+            .width = static_cast<f32>(state.swapchainExtent.width),
+            .height = static_cast<f32>(state.swapchainExtent.height),
+            .minDepth = 0.0f,
+            .maxDepth = 1.0f,
+      };
+      vkCmdSetViewport(command_buffer, 0, 1, &viewport);
+
+      const VkRect2D scissor {
+            .offset = {0, 0},
+            .extent = state.swapchainExtent
+      };
+      vkCmdSetScissor(command_buffer, 0, 1, &scissor);
+
+      // DRAW COMMANDS START HERE
+
+      vkCmdDraw(command_buffer, 3, 1, 0, 0);
+
+      // DRAW COMMANDS END HERE
+
+      vkCmdEndRendering(command_buffer);
+
+      if (vkEndCommandBuffer(command_buffer) != VK_SUCCESS) {
+            Eclipse::LogError("Failed to end command buffer!");
+            abort();
+      }
+}
+
+void Eclipse::RenderDevice::CreateSyncObjects() {
+      state.imageAvailableSemaphores.resize(MAX_FRAMES_IN_FLIGHT);
+      state.renderFinishedSemaphores.resize(MAX_FRAMES_IN_FLIGHT);
+      state.inFlightFences.resize(MAX_FRAMES_IN_FLIGHT);
+
+      VkSemaphoreCreateInfo semaphoreInfo{};
+      semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
+
+      VkFenceCreateInfo fenceInfo{};
+      fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
+      fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
+
+      for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
+            if (vkCreateSemaphore(
+                  state.logicalDevice, &semaphoreInfo, nullptr, &state.imageAvailableSemaphores[i]) != VK_SUCCESS ||
+                  vkCreateSemaphore(state.logicalDevice, &semaphoreInfo, nullptr, &state.renderFinishedSemaphores[i]) != VK_SUCCESS ||
+                  vkCreateFence(state.logicalDevice, &fenceInfo, nullptr, &state.inFlightFences[i]) != VK_SUCCESS
+            ) {
+                  Eclipse::LogError("Failed to create synchronization objects!");
+                  abort();
+            }
+      }
 }
 
 // CLIENT SIDE FUNCTIONS
@@ -720,25 +818,87 @@ Eclipse::RenderDevice::RenderDevice(const CreateInfo& info) {
       CreateImageViews();
       Eclipse::LogInfo("Vulkan Image View Created!");
 
-      CreateRenderPass();
-      Eclipse::LogInfo("Vulkan Render Pass Created!");
-
       CreateGraphicsPipeline();
       Eclipse::LogInfo("Vulkan Graphics Pipeline Created!");
+
+      CreateCommandPool();
+      Eclipse::LogInfo("Vulkan Command Pool Created!");
+
+      CreateCommandBuffers();
+      Eclipse::LogInfo("Vulkan Command Buffer Created!");
+
+      CreateSyncObjects();
+      Eclipse::LogInfo("Vulkan Sync Object Created!");
 }
 
 Eclipse::RenderDevice::~RenderDevice() {
+      vkDeviceWaitIdle(state.logicalDevice);
+
       if (state.debug) vkDestroyDebugUtilsMessengerEXT(state.instance, state.debugMessenger, nullptr);
 
       for (const auto& imageView : state.swapchainImageViews) {
             vkDestroyImageView(state.logicalDevice, imageView, nullptr);
       }
 
+      for (size i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
+            vkDestroySemaphore(state.logicalDevice, state.renderFinishedSemaphores[i], nullptr);
+            vkDestroySemaphore(state.logicalDevice, state.imageAvailableSemaphores[i], nullptr);
+            vkDestroyFence(state.logicalDevice, state.inFlightFences[i], nullptr);
+      }
+
+      vkDestroyCommandPool(state.logicalDevice, state.commandPool, nullptr);
       vkDestroyPipeline(state.logicalDevice, state.graphicsPipeline, nullptr);
       vkDestroyPipelineLayout(state.logicalDevice, state.pipelineLayout, nullptr);
-      vkDestroyRenderPass(state.logicalDevice, state.renderPass, nullptr);
       vkDestroySwapchainKHR(state.logicalDevice, state.swapchain, nullptr);
       vkDestroyDevice(state.logicalDevice, nullptr);
       vkDestroySurfaceKHR(state.instance, state.surface, nullptr);
       vkDestroyInstance(state.instance, nullptr);
+}
+
+void Eclipse::RenderDevice::DrawFrame() {
+      vkWaitForFences(state.logicalDevice, 1, &state.inFlightFences[state.currentFrame], VK_TRUE, UINT64_MAX);
+      vkResetFences(state.logicalDevice, 1, &state.inFlightFences[state.currentFrame]);
+
+      uint32_t imageIndex;
+      vkAcquireNextImageKHR(state.logicalDevice, state.swapchain, UINT64_MAX, state.imageAvailableSemaphores[state.currentFrame], VK_NULL_HANDLE, &imageIndex);
+
+      vkResetCommandBuffer(state.commandBuffers[state.currentFrame], /*VkCommandBufferResetFlagBits*/ 0);
+      RecordCommandBuffer(state.commandBuffers[state.currentFrame], imageIndex);
+
+      VkSubmitInfo submitInfo{};
+      submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+
+      VkSemaphore waitSemaphores[] = {state.imageAvailableSemaphores[state.currentFrame]};
+      VkPipelineStageFlags waitStages[] = {VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT};
+      submitInfo.waitSemaphoreCount = 1;
+      submitInfo.pWaitSemaphores = waitSemaphores;
+      submitInfo.pWaitDstStageMask = waitStages;
+
+      submitInfo.commandBufferCount = 1;
+      submitInfo.pCommandBuffers = &state.commandBuffers[state.currentFrame];
+
+      VkSemaphore signalSemaphores[] = {state.renderFinishedSemaphores[state.currentFrame]};
+      submitInfo.signalSemaphoreCount = 1;
+      submitInfo.pSignalSemaphores = signalSemaphores;
+
+      if (vkQueueSubmit(state.graphicsQueue, 1, &submitInfo, state.inFlightFences[state.currentFrame]) != VK_SUCCESS) {
+            Eclipse::LogError("Failed to acquire image!");
+            abort();
+      }
+
+      VkPresentInfoKHR presentInfo{};
+      presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
+
+      presentInfo.waitSemaphoreCount = 1;
+      presentInfo.pWaitSemaphores = signalSemaphores;
+
+      VkSwapchainKHR swapChains[] = {state.swapchain};
+      presentInfo.swapchainCount = 1;
+      presentInfo.pSwapchains = swapChains;
+
+      presentInfo.pImageIndices = &imageIndex;
+
+      vkQueuePresentKHR(state.presentQueue, &presentInfo);
+
+      state.currentFrame = (state.currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
 }
