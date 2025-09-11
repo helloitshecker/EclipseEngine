@@ -4,9 +4,7 @@ project(EclipseEngine)
 
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(BUILD_SHARED_LIBS OFF)
-
-set(VOLK_LIB "$ENV{VULKAN_SDK}/Lib/volk.lib")
+set(BUILD_SHARED_LIBS ON)
 
 include_directories(${CMAKE_SOURCE_DIR})
 include_directories($ENV{VULKAN_SDK}/Include)
@@ -14,6 +12,7 @@ include_directories($ENV{VULKAN_SDK}/Include)
 find_package(SDL3 CONFIG REQUIRED)
 find_package(TBB CONFIG REQUIRED)
 find_package(unofficial-shaderc CONFIG REQUIRED)
+find_package(volk CONFIG REQUIRED)
 
 add_library(Core
     Engine/Core/Error.hpp
@@ -38,26 +37,21 @@ add_executable(Runtime
     Engine/Runtime/Runtime.cpp
 )
 
-target_include_directories(Graphics PUBLIC $ENV{VCPKG_ROOT}/packages/volk_x64-windows/include)
-
 target_link_libraries(Core
         PUBLIC SDL3::SDL3
         PUBLIC TBB::tbb
-        TBB::tbbmalloc
-        TBB::tbbmalloc_proxy
 )
 target_link_libraries(Graphics
+        PUBLIC Core
         PUBLIC SDL3::SDL3
-        PUBLIC ${VOLK_LIB}
+        PUBLIC volk::volk
+        PUBLIC volk::volk_headers
         PUBLIC TBB::tbb
-        PUBLIC TBB::tbbmalloc
-        PUBLIC TBB::tbbmalloc_proxy
         PUBLIC unofficial::shaderc::shaderc
 )
 target_link_libraries(Runtime
         PUBLIC Core
         PUBLIC Graphics
         PUBLIC TBB::tbb
-        TBB::tbbmalloc
-        TBB::tbbmalloc_proxy
+        PUBLIC SDL3::SDL3
 )

@@ -2,10 +2,10 @@
 
 #include <filesystem>
 #include <fstream>
+#include <vector>
 
 #include <Engine/Core/Types.hpp>
-
-#include "Error.hpp"
+#include <Engine/Core/Error.hpp>
 
 namespace Eclipse::FileSystem {
       using Path = std::filesystem::path;

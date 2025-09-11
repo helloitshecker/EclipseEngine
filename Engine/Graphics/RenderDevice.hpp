@@ -8,7 +8,7 @@
 #include <array>
 #include <optional>
 
-#include <Volk/volk.h>
+#include <volk.h>
 #define VK_NO_PROTOTYPES
 #include <vulkan/vulkan.h>
 

@@ -4,7 +4,7 @@ A Game Engine
 ## VCPKGs
 
 ```
-vcpkg install tbb sdl3 shaderc
+vcpkg install tbb sdl3[vulkan] shaderc volk
 ```
 
 > **NOTE!**
