@@ -13,6 +13,7 @@ find_package(SDL3 CONFIG REQUIRED)
 find_package(TBB CONFIG REQUIRED)
 find_package(unofficial-shaderc CONFIG REQUIRED)
 find_package(volk CONFIG REQUIRED)
+find_package(mio CONFIG REQUIRED)
 
 add_library(Core
     Engine/Core/Error.hpp
@@ -24,6 +25,8 @@ add_library(Core
     Engine/Core/Window.hpp
     Engine/Core/Window.cpp
     Engine/Core/JobSystem.hpp
+    Engine/Core/VirtualFS.cpp
+    Engine/Core/VirtualFS.hpp
 )
 
 add_library(Graphics
@@ -40,6 +43,8 @@ add_executable(Runtime
 target_link_libraries(Core
         PUBLIC SDL3::SDL3
         PUBLIC TBB::tbb
+        PUBLIC mio::mio
+        PUBLIC mio::mio-headers
 )
 target_link_libraries(Graphics
         PUBLIC Core

@@ -3,7 +3,6 @@
 #include <print>
 #include <string_view>
 #include <format>
-#include <cstdio>
 
 constexpr static std::string_view RedBold       = "\033[1;31m";
 constexpr static std::string_view YellowBold    = "\033[1;33m";

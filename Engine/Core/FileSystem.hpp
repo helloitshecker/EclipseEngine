@@ -19,6 +19,10 @@ namespace Eclipse::FileSystem {
       std::optional<Path> ToCachePath(const Path&);
       std::optional<TextFileContent> ReadTextFile(const Path&);
       std::optional<BinaryFileContent> ReadBinaryFile(const Path&);
+      std::optional<Path> SearchPossiblePaths(const std::vector<Path>& paths);
+      std::optional<Path> SearchPossibleFilePaths(const std::vector<Path>& paths);
+      std::optional<Path> SearchUpTreeRecursiveN(const Path& path, const u32 depth);
+      std::optional<Path> SearchUpTreeRecursiveFileN(const Path& path, const u32 depth);
 
       template<typename T>
       std::optional<CustomFileContent<T>> ReadCustomFile(const Path& path) {

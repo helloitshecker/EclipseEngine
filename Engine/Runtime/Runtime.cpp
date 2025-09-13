@@ -3,6 +3,7 @@
 #include <Engine/Core/Error.hpp>
 #include <Engine/Graphics/RenderDevice.hpp>
 #include <Engine/Core/JobSystem.hpp>
+#include <Engine/Core/VirtualFS.hpp>
 
 bool quit = false;
 #ifndef NDEBUG
@@ -67,6 +68,20 @@ void HandleEvents(Eclipse::EventManager& event_manager) {
 }
 
 int main(int argc, char* argv[]) {
+
+    const auto resource_file_path = Eclipse::FileSystem::SearchUpTreeRecursiveFileN("Resources/Resources.epak", 5);
+    if (resource_file_path == std::nullopt) {
+        Eclipse::LogError("Failed to find Resource File!");
+        abort();
+    }
+    Eclipse::LogInfo("Resource file found at: \"{}\"", resource_file_path.value().string());
+
+    Eclipse::VirtualFS vfs;
+    const auto table = vfs.mount({resource_file_path.value(), false});
+
+    for (const auto& entry : table.value()) {
+        Eclipse::LogInfo("Entry: {}", entry.filename);
+    }
 
       Eclipse::EventManager event_manager;
 

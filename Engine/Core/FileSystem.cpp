@@ -126,4 +126,36 @@ namespace Eclipse::FileSystem {
       }
 
 
+      std::optional<Path> SearchPossiblePaths(const std::vector<Path>& paths) {
+          for (const auto& path : paths) {
+              if (std::filesystem::exists(path)) return path;
+          }
+          return std::nullopt;
+      }
+
+      std::optional<Path> SearchPossibleFilePaths(const std::vector<Path>& paths) {
+          for (const auto& path : paths) {
+              if (std::filesystem::is_regular_file(path)) return path;
+          }
+          return std::nullopt;
+      }
+
+      std::optional<Path> SearchUpTreeRecursiveN(const Path& path, const u32 depth) {
+          Path traverser = "../";
+          for (u32 i = 0; i < depth; i++) {
+              if (std::filesystem::exists(traverser / path)) return traverser / path;
+              traverser /= "../";
+          }
+          return std::nullopt;
+      }
+
+      std::optional<Path> SearchUpTreeRecursiveFileN(const Path& path, const u32 depth) {
+          Path traverser = "../";
+          for (u32 i = 0; i < depth; i++) {
+              if (std::filesystem::is_regular_file(traverser / path)) return traverser / path;
+              traverser /= "../";
+          }
+          return std::nullopt;
+      }
+
 }
