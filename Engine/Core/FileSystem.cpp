@@ -113,6 +113,7 @@ namespace Eclipse::FileSystem {
             }
 
             file.write(content.data(), content.size());
+            if (!file.good()) return false;
             return true;
       }
 
@@ -122,7 +123,31 @@ namespace Eclipse::FileSystem {
                   return false;
             }
             file.write(reinterpret_cast<const char*>(content.data()), content.size());
+            if (!file.good()) return false;
             return true;
+      }
+
+      bool WriteBinaryFile(const Path& path, const BinaryFileContent& content, const u64 offset) {
+          std::fstream file(path, std::ios::in | std::ios::out | std::ios::binary);
+          if (!file) return false;
+
+          file.seekp(offset);
+          if (!file.good()) return false;
+
+          file.write(reinterpret_cast<const char*>(content.data()), content.size());
+          if (!file.good()) return false;
+
+          return true;
+      }
+
+      bool AppendBinaryFile(const Path& path, const BinaryFileContent& content) {
+          std::fstream file(path, std::ios::binary | std::ios::app);
+          if (!file) return false;
+
+          file.write(reinterpret_cast<const char*>(content.data()), content.size());
+          if (!file.good()) return false;
+
+          return true;
       }
 
 

@@ -3,6 +3,7 @@
 #include <Engine/Core/Types.hpp>
 #include <Engine/Core/Window.hpp>
 #include <Engine/Graphics/ShaderManager.hpp>
+#include <Engine/Core/VirtualFS.hpp>
 
 #include <vector>
 #include <array>
@@ -20,6 +21,7 @@ namespace Eclipse {
                 struct CreateInfo {
                         const std::vector<const char *> extensions;
                         Window& window;
+                        VirtualFS& vfs;
                         bool debug;
                 };
 
@@ -87,6 +89,7 @@ namespace Eclipse {
                         VkQueue transferQueue;
 
                         std::unique_ptr<ShaderManager> shaderManager;
+                        std::unique_ptr<VirtualFS> vfs;
                 };
 
                 State state {};

@@ -495,15 +495,28 @@ void Eclipse::RenderDevice::CreateGraphicsPipeline() {
             abort();
       }
 
+      const auto triangle_shader_vert_source = state.vfs->read_file("res://triangle.vert");
+      if (!triangle_shader_vert_source) {
+          Eclipse::LogError("Failed to read vertex shader [triangle]!");
+          abort();
+      }
+      const auto triangle_shader_frag_source = state.vfs->read_file("res://triangle.frag");
+      if (!triangle_shader_frag_source) {
+          Eclipse::LogError("Failed to read fragment shader [triangle]!");
+          abort();
+      }
+
       // Compiling triangle shader
-      const auto triangle_shader_vert = state.shaderManager->compile({
-            .name = Eclipse::FileSystem::ToShaderPath("triangle.vert").value().string(),
+      const auto triangle_shader_vert = state.shaderManager->compile((Eclipse::ShaderManager::ShaderCreateInfoEXT){
+            .source = triangle_shader_vert_source.value(),
+            .name = "triangle.vert",
             .entry = "main",
             .type = Eclipse::ShaderManager::ShaderType::VERTEX
       });
 
-      const auto triangle_shader_frag = state.shaderManager->compile({
-            .name = Eclipse::FileSystem::ToShaderPath("triangle.frag").value().string(),
+      const auto triangle_shader_frag = state.shaderManager->compile((Eclipse::ShaderManager::ShaderCreateInfoEXT){
+            .source = triangle_shader_frag_source.value(),
+            .name = "triangle.frag",
             .entry = "main",
             .type = Eclipse::ShaderManager::ShaderType::FRAGMENT
       });

@@ -10,7 +10,7 @@
 namespace Eclipse::FileSystem {
       using Path = std::filesystem::path;
       using TextFileContent = std::vector<char>;
-      using BinaryFileContent = std::vector<std::byte>;
+      using BinaryFileContent = std::vector<char>;
 
       template<typename T>
       using CustomFileContent = std::vector<T>;
@@ -48,6 +48,8 @@ namespace Eclipse::FileSystem {
 
       bool WriteTextFile(const Path&, const TextFileContent&);
       bool WriteBinaryFile(const Path&, const BinaryFileContent&);
+      bool WriteBinaryFile(const Path&, const BinaryFileContent&, const u64);
+      bool AppendBinaryFile(const Path&, const BinaryFileContent&);
 
       template<typename T>
       bool WriteCustomFile(const Path& path, const CustomFileContent<T>& content) {
@@ -61,5 +63,4 @@ namespace Eclipse::FileSystem {
             file.write(reinterpret_cast<const char*>(content.data()), content.size() * sizeof(T));
             return true;
       }
-
 }

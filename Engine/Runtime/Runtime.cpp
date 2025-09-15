@@ -9,7 +9,7 @@ bool quit = false;
 #ifndef NDEBUG
 constexpr bool debug = true;
 #else
-constexpr bool debug = false;
+constexpr bool debug = false;-
 #endif
 
 void HandleEvents(Eclipse::EventManager& event_manager) {
@@ -74,14 +74,28 @@ int main(int argc, char* argv[]) {
         Eclipse::LogError("Failed to find Resource File!");
         abort();
     }
+
     Eclipse::LogInfo("Resource file found at: \"{}\"", resource_file_path.value().string());
 
-    Eclipse::VirtualFS vfs;
-    const auto table = vfs.mount({resource_file_path.value(), false});
+    // Eclipse::VirtualFS::GenerateResourceFile();
+    // abort();
 
-    for (const auto& entry : table.value()) {
-        Eclipse::LogInfo("Entry: {}", entry.filename);
-    }
+    // const auto fp = Eclipse::FileSystem::SearchUpTreeRecursiveFileN("Engine/Shaders/Source/triangle.frag", 5);
+    // const auto bincont = Eclipse::FileSystem::ReadBinaryFile(fp.value());
+    // const auto wp = "../../Resources/triangle.frag.ebin";
+
+    // Eclipse::FileSystem::WriteBinaryFile(wp, bincont.value());
+    // abort();
+
+    Eclipse::VirtualFS vfs {resource_file_path.value(), "res://"};
+
+    // const auto vert_code_path = Eclipse::FileSystem::SearchUpTreeRecursiveFileN("Engine/Shaders/Source/triangle.vert", 5);
+    // const auto vert_code = Eclipse::FileSystem::ReadBinaryFile(vert_code_path.value());
+    // const auto frag_code_path = Eclipse::FileSystem::SearchUpTreeRecursiveFileN("Engine/Shaders/Source/triangle.frag", 5);
+    // const auto frag_code = Eclipse::FileSystem::ReadBinaryFile(frag_code_path.value());
+
+    // vfs.create_file("res://triangle.vert", vert_code.value());
+    // vfs.create_file("res://triangle.frag", frag_code.value());
 
       Eclipse::EventManager event_manager;
 
@@ -98,6 +112,7 @@ int main(int argc, char* argv[]) {
       Eclipse::RenderDevice::CreateInfo render_dev_info {
             .extensions = win.GetVulkanCreationData(),
             .window = win,
+            .vfs = vfs,
             .debug = debug
       };
 

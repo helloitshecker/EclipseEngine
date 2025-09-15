@@ -1,5 +1,6 @@
 #include "ShaderManager.hpp"
 
+#include <chrono>
 
 namespace Eclipse {
       ShaderManager::ShaderManager(const ShaderManagerCreateInfo& createInfo) {
@@ -109,6 +110,74 @@ namespace Eclipse {
             Eclipse::LogInfo("Cache file written to \"{}\"!", cache_path_str);
 
             return obj;
+      }
+
+      std::optional<Eclipse::ShaderManager::ShaderObject> ShaderManager::compile(const ShaderCreateInfoEXT& shaderInfo) {
+          if (shaderInfo.source._src_min.empty()) {
+              Eclipse::LogError("Shader source content is empty for \"{}\"!", shaderInfo.name);
+              return std::nullopt;
+          }
+
+          std::string cache_path_str = shaderInfo.name + ".cache";
+          const std::filesystem::path cache_file = cache_path_str;
+
+
+          if (std::filesystem::exists(cache_file)) {
+              const auto last_write_time_cache_file = static_cast<u64>(std::chrono::system_clock::to_time_t(
+                  std::chrono::clock_cast<std::chrono::system_clock>(
+                      std::filesystem::last_write_time(cache_file)
+                      )));
+              if (last_write_time_cache_file > shaderInfo.source.last_modified_date) {
+                const auto spirv_file_content = Eclipse::FileSystem::ReadCustomFile<u32>(cache_file);
+                if (spirv_file_content) {
+                    Eclipse::LogInfo("Loading \"{}\" from cache!", shaderInfo.name);
+                    ShaderObject obj{};
+                    obj.spirv_code = spirv_file_content.value();
+                    obj.index = shaders.size();
+                    shaders.push_back(obj);
+                    return obj;
+                } else {
+                    Eclipse::LogWarn("Failed to read cache for \"{}\"! Recompiling...", shaderInfo.name);
+                }
+              }
+          }
+
+          // Determine shader kind
+          shaderc_shader_kind shaderKind{};
+          switch (shaderInfo.type) {
+          case ShaderType::VERTEX:   shaderKind = shaderc_glsl_default_vertex_shader; break;
+          case ShaderType::FRAGMENT: shaderKind = shaderc_glsl_default_fragment_shader; break;
+          case ShaderType::COMPUTE:  shaderKind = shaderc_glsl_default_compute_shader; break;
+          default:
+              Eclipse::LogError("Shader type not recognized for \"{}\"!", shaderInfo.name);
+              return std::nullopt;
+          }
+
+          // Compile using BinaryFileContent
+          shaderc::SpvCompilationResult compilationResult = compiler.CompileGlslToSpv(
+              shaderInfo.source._src_min.data(),
+              shaderInfo.source._src_min.size(),
+              shaderKind,
+              shaderInfo.name.c_str(),
+              shaderInfo.entry.c_str(),
+              compileOptions
+              );
+
+          if (compilationResult.GetCompilationStatus() != shaderc_compilation_status_success) {
+              Eclipse::LogError("Shader Compilation Error (\"{}\"): {}", shaderInfo.name, compilationResult.GetErrorMessage());
+              return std::nullopt;
+          }
+
+          ShaderObject obj{};
+          obj.spirv_code = { compilationResult.cbegin(), compilationResult.cend() };
+          obj.index = shaders.size();
+          shaders.push_back(obj);
+
+          // Write cache
+          Eclipse::FileSystem::WriteCustomFile<u32>(cache_file, obj.spirv_code);
+          Eclipse::LogInfo("Cache file written to \"{}\"!", cache_path_str);
+
+          return obj;
       }
 
 }
