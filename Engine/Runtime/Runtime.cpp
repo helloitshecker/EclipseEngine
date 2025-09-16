@@ -69,14 +69,6 @@ void HandleEvents(Eclipse::EventManager& event_manager) {
 
 int main(int argc, char* argv[]) {
 
-    const auto resource_file_path = Eclipse::FileSystem::SearchUpTreeRecursiveFileN("Resources/Resources.epak", 5);
-    if (resource_file_path == std::nullopt) {
-        Eclipse::LogError("Failed to find Resource File!");
-        abort();
-    }
-
-    Eclipse::LogInfo("Resource file found at: \"{}\"", resource_file_path.value().string());
-
     // Eclipse::VirtualFS::GenerateResourceFile();
     // abort();
 
@@ -87,7 +79,24 @@ int main(int argc, char* argv[]) {
     // Eclipse::FileSystem::WriteBinaryFile(wp, bincont.value());
     // abort();
 
-    Eclipse::VirtualFS vfs {resource_file_path.value(), "res://"};
+    const auto resources_folder = Eclipse::FileSystem::SearchUpTreeRecursiveN("Resources", 5);
+    if (!resources_folder) {
+        Eclipse::LogError("Failed to load resources file :(");
+        abort();
+    }
+
+    const Eclipse::VirtualFS::CreateInfo vfs_create_info {
+        .mount_point = "res://",
+        .folder = resources_folder.value(),
+    };
+
+    std::error_code v_ec;
+    Eclipse::VirtualFS vfs (vfs_create_info, v_ec);
+
+    if (v_ec) {
+        Eclipse::LogError("[VIRTUAL FILESYSTEM] {}", v_ec.message());
+        abort();
+    }
 
     // const auto vert_code_path = Eclipse::FileSystem::SearchUpTreeRecursiveFileN("Engine/Shaders/Source/triangle.vert", 5);
     // const auto vert_code = Eclipse::FileSystem::ReadBinaryFile(vert_code_path.value());

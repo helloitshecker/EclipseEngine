@@ -186,18 +186,34 @@ Eclipse::RenderDevice::SwapchainSupportDetails Eclipse::RenderDevice::QuerySwapc
       return details;
 }
 
-std::optional<VkShaderModule> Eclipse::RenderDevice::CreateShaderModule(const Eclipse::FileSystem::CustomFileContent<u32>& file) const {
-      VkShaderModuleCreateInfo createInfo{};
-      createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
-      createInfo.codeSize = file.size() * sizeof(u32);
-      createInfo.pCode = file.data();
+std::optional<VkShaderModule> Eclipse::RenderDevice::CreateShaderModule(const std::span<const u32>& file) const {
+    // Validation
+    if (file.empty()) {
+        Eclipse::LogError("Cannot create shader module from empty SPIR-V data");
+        return std::nullopt;
+    }
 
-      VkShaderModule module;
-      if (vkCreateShaderModule(state.logicalDevice, &createInfo, nullptr, &module) != VK_SUCCESS) {
-            return std::nullopt;
-      }
+    // // SPIR-V validation - first word should be the magic number
+    // if (file[0] != 0x07230203) {
+    //     Eclipse::LogError("Invalid SPIR-V magic number: 0x{:08X}", file[0]);
+    //     return std::nullopt;
+    // }
 
-      return module;
+    VkShaderModuleCreateInfo createInfo{};
+    createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
+    createInfo.codeSize = file.size() * sizeof(u32);
+    createInfo.pCode = file.data();
+
+    VkShaderModule module;
+    VkResult result = vkCreateShaderModule(state.logicalDevice, &createInfo, nullptr, &module);
+
+    if (result != VK_SUCCESS) {
+        Eclipse::LogError("Failed to create shader module. VkResult: {}", static_cast<int>(result));
+        return std::nullopt;
+    }
+
+    Eclipse::LogInfo("Successfully created shader module ({} bytes)", createInfo.codeSize);
+    return module;
 }
 
 
@@ -495,27 +511,27 @@ void Eclipse::RenderDevice::CreateGraphicsPipeline() {
             abort();
       }
 
-      const auto triangle_shader_vert_source = state.vfs->read_file("res://triangle.vert");
-      if (!triangle_shader_vert_source) {
+    auto triangle_shader_vert_object = state.vfs->get_file("res://triangle.vert");
+      if (!triangle_shader_vert_object) {
           Eclipse::LogError("Failed to read vertex shader [triangle]!");
           abort();
       }
-      const auto triangle_shader_frag_source = state.vfs->read_file("res://triangle.frag");
-      if (!triangle_shader_frag_source) {
+    auto triangle_shader_frag_object = state.vfs->get_file("res://triangle.frag");
+      if (!triangle_shader_frag_object) {
           Eclipse::LogError("Failed to read fragment shader [triangle]!");
           abort();
       }
 
       // Compiling triangle shader
-      const auto triangle_shader_vert = state.shaderManager->compile((Eclipse::ShaderManager::ShaderCreateInfoEXT){
-            .source = triangle_shader_vert_source.value(),
+      const auto triangle_shader_vert = state.shaderManager->compile({
+            .file = triangle_shader_vert_object.value(),
             .name = "triangle.vert",
             .entry = "main",
             .type = Eclipse::ShaderManager::ShaderType::VERTEX
       });
 
-      const auto triangle_shader_frag = state.shaderManager->compile((Eclipse::ShaderManager::ShaderCreateInfoEXT){
-            .source = triangle_shader_frag_source.value(),
+      const auto triangle_shader_frag = state.shaderManager->compile({
+            .file = triangle_shader_frag_object.value(),
             .name = "triangle.frag",
             .entry = "main",
             .type = Eclipse::ShaderManager::ShaderType::FRAGMENT
@@ -528,8 +544,8 @@ void Eclipse::RenderDevice::CreateGraphicsPipeline() {
             Eclipse::LogInfo("Successfully compiled triangle shader!");
       }
 
-      auto vert_shader_module = CreateShaderModule(triangle_shader_vert.value().spirv_code);
-      auto frag_shader_module = CreateShaderModule(triangle_shader_frag.value().spirv_code);
+      const auto vert_shader_module = CreateShaderModule(triangle_shader_vert.value().spirv_code);
+      const auto frag_shader_module = CreateShaderModule(triangle_shader_frag.value().spirv_code);
 
       if (vert_shader_module == std::nullopt || frag_shader_module == std::nullopt) {
             Eclipse::LogError("Failed to attach triangle shader to vulkan :(!");
@@ -849,6 +865,8 @@ Eclipse::RenderDevice::RenderDevice(const CreateInfo& info) {
       state.deviceExtensions.push_back(VK_KHR_SWAPCHAIN_EXTENSION_NAME);
       state.deviceExtensions.push_back(VK_KHR_DYNAMIC_RENDERING_EXTENSION_NAME);
       // state.deviceExtensions.push_back(VK_KHR_SYNCHRONIZATION_2_EXTENSION_NAME);
+
+      state.vfs = &info.vfs;
 
       // Enable Validation Layers if debug is enabled
       if (state.debug) {

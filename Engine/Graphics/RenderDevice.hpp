@@ -89,7 +89,7 @@ namespace Eclipse {
                         VkQueue transferQueue;
 
                         std::unique_ptr<ShaderManager> shaderManager;
-                        std::unique_ptr<VirtualFS> vfs;
+                        VirtualFS* vfs;
                 };
 
                 State state {};
@@ -110,6 +110,6 @@ namespace Eclipse {
                 static bool CheckInstanceLayerSupport(const std::vector<const char*>&);
                 [[nodiscard]] VkPhysicalDevice SelectPhysicalDevice(const std::vector<VkPhysicalDevice>&) const;
                 static SwapchainSupportDetails QuerySwapchainSupport(VkPhysicalDevice, VkSurfaceKHR);
-                [[nodiscard]] std::optional<VkShaderModule> CreateShaderModule(const Eclipse::FileSystem::CustomFileContent<u32>&) const;
+                [[nodiscard]] std::optional<VkShaderModule> CreateShaderModule(const std::span<const u32>&) const;
         };
 }

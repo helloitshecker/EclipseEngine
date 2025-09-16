@@ -28,20 +28,15 @@ public:
     };
 
     struct ShaderCreateInfo {
-        std::string name;
-        std::string entry = "main";
-        ShaderType type;
-    };
-
-    struct ShaderCreateInfoEXT {
-        const Eclipse::VirtualFS::EPAK_File& source;
+        VirtualFS::File& file;
         std::string name;
         std::string entry = "main";
         ShaderType type;
     };
 
     struct ShaderObject {
-        std::vector<u32> spirv_code;
+        std::vector<u32> spirv_storage;
+        std::span<const u32> spirv_code;
 
     private:
         u64 index = UINT64_MAX;
@@ -52,13 +47,13 @@ public:
 
     ShaderManager(const ShaderManagerCreateInfo& createInfo);
 
-    std::optional<ShaderObject> compile(const ShaderCreateInfoEXT& shaderInfo);
-
     std::optional<ShaderObject> compile(const ShaderCreateInfo& shaderInfo);
 private:
     shaderc::Compiler compiler;
     shaderc::CompileOptions compileOptions;
 
     std::vector<ShaderObject> shaders;
+
+    std::unique_ptr<VirtualFS> vfs;
 };
 }
