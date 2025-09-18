@@ -2,10 +2,12 @@
 
 #include <Engine/Core/Error.hpp>
 #include <Engine/Core/FileSystem.hpp>
+#include <Engine/Core/Types.hpp>
 
 #include <mio/mmap.hpp>
 
 #include <chrono>
+#include <span>
 
 namespace Eclipse {
 class VirtualFS {
@@ -23,56 +25,13 @@ public:
 
     struct Date {
     private:
-        std::chrono::sys_seconds _t;
+        fs::file_time_type _t;
 
     public:
-        Date() = default;
-        Date(std::chrono::sys_seconds t) : _t(t) {}
-        Date(std::time_t unixTime) : _t(std::chrono::sys_seconds{std::chrono::seconds{unixTime}}) {}
-        Date(const std::filesystem::file_time_type& ftime) {
-            using namespace std::chrono;
-            auto sctp = file_clock::to_sys(ftime);
-            _t = time_point_cast<seconds>(sctp);
-        }
-        // Getters
-        std::time_t unixTime() const { return _t.time_since_epoch().count(); }
+        Date(const fs::file_time_type time) : _t(time) {}
 
-        i32 year() const {
-            const auto ymd = std::chrono::year_month_day{std::chrono::floor<std::chrono::days>(_t)};
-            return i32(ymd.year());
-        }
-
-        u32 month() const {
-            const auto ymd = std::chrono::year_month_day{std::chrono::floor<std::chrono::days>(_t)};
-            return u32(ymd.month());
-        }
-
-        u32 day() const {
-            const auto ymd = std::chrono::year_month_day{std::chrono::floor<std::chrono::days>(_t)};
-            return u32(ymd.day());
-        }
-
-        u32 hour() const {
-            auto days = std::chrono::floor<std::chrono::days>(_t);
-            return u32(std::chrono::duration_cast<std::chrono::hours>(_t - days).count());
-        }
-
-        u32 minute() const {
-            auto hours = std::chrono::floor<std::chrono::hours>(_t);
-            return u32(std::chrono::duration_cast<std::chrono::minutes>(_t - hours).count());
-        }
-
-        u32 second() const {
-            auto minutes = std::chrono::floor<std::chrono::minutes>(_t);
-            return u32(std::chrono::duration_cast<std::chrono::seconds>(_t - minutes).count());
-        }
-
-        std::string format(const std::string& fmt = "%Y-%m-%d %H:%M:%S") const {
-            std::time_t t = std::chrono::system_clock::to_time_t(_t);
-            std::tm tm = *std::localtime(&t);
-            std::ostringstream oss;
-            oss << std::put_time(&tm, fmt.c_str());
-            return oss.str();
+        u64 get() {
+            return _t.time_since_epoch().count();
         }
     };
 
@@ -88,7 +47,7 @@ public:
     public:
         File(const FileSystem::Path& full_path) : absolute_path(full_path), state(FileState::Unloaded), bigfile(fs::file_size(full_path) >= 1024*1024*512), last_modified_date(fs::last_write_time(full_path)) {
             path = absolute_path.relative_path();
-            name = absolute_path.filename();
+            name = absolute_path.filename().string();
         }
 
         std::string name;
@@ -158,7 +117,7 @@ public:
         bool refresh();
     };
 
-    VirtualFS(const CreateInfo& info, std::error_code& error_code);
+    VirtualFS(const CreateInfo& info, Error& error);
     ~VirtualFS() = default;
 
     std::optional<File> get_file(const FileSystem::Path& path);

@@ -12,7 +12,7 @@ constexpr bool debug = true;
 constexpr bool debug = false;-
 #endif
 
-void HandleEvents(Eclipse::EventManager& event_manager) {
+static void HandleEvents(Eclipse::EventManager& event_manager) {
       while (true) {
             auto event_opt = event_manager.Pop();
             if (!event_opt.has_value())
@@ -69,20 +69,10 @@ void HandleEvents(Eclipse::EventManager& event_manager) {
 
 int main(int argc, char* argv[]) {
 
-    // Eclipse::VirtualFS::GenerateResourceFile();
-    // abort();
-
-    // const auto fp = Eclipse::FileSystem::SearchUpTreeRecursiveFileN("Engine/Shaders/Source/triangle.frag", 5);
-    // const auto bincont = Eclipse::FileSystem::ReadBinaryFile(fp.value());
-    // const auto wp = "../../Resources/triangle.frag.ebin";
-
-    // Eclipse::FileSystem::WriteBinaryFile(wp, bincont.value());
-    // abort();
-
     const auto resources_folder = Eclipse::FileSystem::SearchUpTreeRecursiveN("Resources", 5);
     if (!resources_folder) {
         Eclipse::LogError("Failed to load resources file :(");
-        abort();
+        std::exit(EXIT_FAILURE);
     }
 
     const Eclipse::VirtualFS::CreateInfo vfs_create_info {
@@ -90,33 +80,31 @@ int main(int argc, char* argv[]) {
         .folder = resources_folder.value(),
     };
 
-    std::error_code v_ec;
-    Eclipse::VirtualFS vfs (vfs_create_info, v_ec);
+    Eclipse::Error vfs_ec;
+    Eclipse::VirtualFS vfs (vfs_create_info, vfs_ec);
 
-    if (v_ec) {
-        Eclipse::LogError("[VIRTUAL FILESYSTEM] {}", v_ec.message());
-        abort();
+    if (vfs_ec) {
+        Eclipse::LogError("[VIRTUAL FILESYSTEM] {}", vfs_ec.message);
+        std::exit(EXIT_FAILURE);
     }
-
-    // const auto vert_code_path = Eclipse::FileSystem::SearchUpTreeRecursiveFileN("Engine/Shaders/Source/triangle.vert", 5);
-    // const auto vert_code = Eclipse::FileSystem::ReadBinaryFile(vert_code_path.value());
-    // const auto frag_code_path = Eclipse::FileSystem::SearchUpTreeRecursiveFileN("Engine/Shaders/Source/triangle.frag", 5);
-    // const auto frag_code = Eclipse::FileSystem::ReadBinaryFile(frag_code_path.value());
-
-    // vfs.create_file("res://triangle.vert", vert_code.value());
-    // vfs.create_file("res://triangle.frag", frag_code.value());
 
       Eclipse::EventManager event_manager;
 
       Eclipse::Window::CreateInfo win_info {
-            .title = "Window",
+            .title = "Eclipse Runtime",
             .width = 800,
             .height = 600,
             .resizable = true,
             .flags = Eclipse::Window::Flags::WINDOWED
       };
 
-      Eclipse::Window win{win_info};
+      Eclipse::Error window_ec;
+      Eclipse::Window win(win_info, window_ec);
+
+      if (window_ec) {
+          Eclipse::LogError("[WINDOW] {}", window_ec.message);
+          std::exit(EXIT_FAILURE);
+      }
 
       Eclipse::RenderDevice::CreateInfo render_dev_info {
             .extensions = win.GetVulkanCreationData(),
@@ -125,7 +113,7 @@ int main(int argc, char* argv[]) {
             .debug = debug
       };
 
-      Eclipse::RenderDevice render_device{render_dev_info};
+      Eclipse::RenderDevice render_device(render_dev_info);
 
       while (!quit) {
             win.SubmitEvents(event_manager);

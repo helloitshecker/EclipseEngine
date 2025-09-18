@@ -3,9 +3,6 @@
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_vulkan.h>
 
-#include <Engine/Core/Error.hpp>
-
-
 namespace Eclipse {
 
         u64 Window::get_monitor_pixels() {
@@ -17,11 +14,11 @@ namespace Eclipse {
                 return ret;
         }
 
-        Window::Window(const CreateInfo & info): handle(nullptr) {
+        Window::Window(const CreateInfo& info, Error& error) : handle(nullptr) {
                 // Init SDL
                 if (!SDL_Init(SDL_INIT_VIDEO)) {
-                        Eclipse::LogError("Failed to initialize SDL!");
-                        return;
+                    error = Error("Failed to initialize SDL!", ErrorType::Window_Unreachable);
+                    return;
                 }
 
                 // If width or height is set to -1 then set window size to monitor size
@@ -45,7 +42,7 @@ namespace Eclipse {
                 // Creates a window here
                 handle = SDL_CreateWindow(info.title.c_str(), width, height, flags);
                 if (!handle) {
-                        Eclipse::LogError("Failed to create window! Due to {}", SDL_GetError());
+                        error = Error(std::format("Failed to create window! Due to {}", SDL_GetError()), ErrorType::Window_NotOpening);
                         return;
                 }
 
@@ -55,12 +52,13 @@ namespace Eclipse {
 
         Window::~Window() {
                 SDL_DestroyWindow(static_cast<SDL_Window *>(handle));
-                SDL_Quit();
+                //SDL_Quit();
         }
 
         void Window::SubmitEvents(EventManager& event_manager) {
                 SDL_Event event;
                 while (SDL_PollEvent(&event)) {
+                        if (event.window.windowID != SDL_GetWindowID(static_cast<SDL_Window*>(handle))) continue;
                         switch (event.type) {
                                 case SDL_EVENT_WINDOW_CLOSE_REQUESTED:
                                 case SDL_EVENT_WINDOW_DESTROYED: {

@@ -40,3 +40,33 @@ namespace Eclipse {
             std::println(fmt, std::forward<Args>(args)...);
       }
 };
+
+namespace Eclipse {
+    
+    enum class ErrorType {
+        None,
+        Unknown,
+        Window_Unreachable,
+        Window_NotOpening,
+        Filesystem_InvalidPath,
+        Filesystem_FileNotFound
+    };
+
+    struct Error {
+        ErrorType type;
+        std::string message;
+
+        Error() : type(ErrorType::None), message() {}
+        Error(ErrorType error_type) : type(error_type), message() {}
+        Error(const std::string& error_message) : type(ErrorType::Unknown), message(error_message) {}
+        Error(std::string&& error_message) : type(ErrorType::Unknown), message(std::move(error_message)) {}
+        Error(ErrorType error_type, const std::string& error_message) : type(error_type), message(error_message) {}
+        Error(const std::string& error_message, ErrorType error_type) : type(error_type), message(error_message) {}
+        Error(ErrorType error_type, std::string&& error_message) : type(error_type), message(std::move(error_message)) {}
+        Error(std::string&& error_message, ErrorType error_type) : type(error_type), message(std::move(error_message)) {}
+
+        explicit operator bool() const {
+            return type != ErrorType::None;
+        }
+    };
+}

@@ -19,11 +19,11 @@ namespace Eclipse {
               .folder = FileSystem::SearchUpTreeRecursiveN("Cache", 5).value(),
             };
 
-            std::error_code ec;
+            Error ec;
             vfs = std::make_unique<VirtualFS>(info, ec);
 
             if (ec) {
-                Eclipse::LogError("[SHADERMANAGER] [VIRTUAL FILESYSTEM] {}", ec.message());
+                Eclipse::LogError("[SHADERMANAGER] [VIRTUAL FILESYSTEM] {}", ec.message);
                 return;
             }
 
@@ -39,7 +39,7 @@ namespace Eclipse {
                 Eclipse::LogWarn("Cache File not found! Continuing compilation!");
             } else if (cacheFile->read().empty()) {
                 Eclipse::LogWarn("Cache File not found! Continuing compilation!");
-            } else if (cacheFile->last_modified_date.unixTime() > shaderInfo.file.last_modified_date.unixTime()) {
+            } else if (cacheFile->last_modified_date.get() > shaderInfo.file.last_modified_date.get()) {
                 Eclipse::LogInfo("Using Cache file at \"{}\"", cacheFile->path);
 
                 std::span<const u32> code = cacheFile->read_as<u32>();

@@ -2,6 +2,8 @@
 
 #include <Engine/Core/Types.hpp>
 #include <Engine/Core/EventManager.hpp>
+#include <Engine/Core/Error.hpp>
+
 #include <string>
 
 namespace Eclipse {
@@ -22,7 +24,7 @@ namespace Eclipse {
                         Flags flags                     = Flags::BORDERLESS_FULLSCREEN;
                 };
 
-                explicit Window(const CreateInfo&);
+                explicit Window(const CreateInfo&, Error& error);
                 ~Window();
 
                 void SubmitEvents(EventManager&);

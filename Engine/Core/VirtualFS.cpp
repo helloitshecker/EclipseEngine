@@ -3,12 +3,11 @@
 namespace fs = std::filesystem;
 
 namespace Eclipse {
-    VirtualFS::VirtualFS(const CreateInfo& info, std::error_code& error_code) : mount_point(info.mount_point), parent_folder(fs::absolute(info.folder)) {
+    VirtualFS::VirtualFS(const CreateInfo& info, Error& error) : mount_point(info.mount_point), parent_folder(fs::absolute(info.folder)) {
 
         std::error_code ec;
         if (!fs::exists(parent_folder, ec) || ec) {
-            Eclipse::LogError("Invalid Path \"{}\"!", parent_folder);
-            error_code = ec;
+            error = Error(std::format("[FILESYSTEM] Invalid Path \"{}\"", parent_folder), ErrorType::Filesystem_InvalidPath);
             return;
         }
 

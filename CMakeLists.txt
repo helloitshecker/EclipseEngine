@@ -1,10 +1,11 @@
 cmake_minimum_required(VERSION 3.10)
 
+set(CMAKE_TOOLCHAIN_FILE $ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake)
 project(EclipseEngine)
 
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(BUILD_SHARED_LIBS ON)
+set(BUILD_SHARED_LIBS OFF)
 
 include_directories(${CMAKE_SOURCE_DIR})
 include_directories($ENV{VULKAN_SDK}/Include)
